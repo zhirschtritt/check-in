@@ -1,0 +1,10 @@
+{
+  "type": "postgres",
+  "host": "localhost",
+  "port": 5432,
+  "username": "dev",
+  "password": "",
+  "database": "checkin-dev",
+  "entities": ["src/**/*.entity{.ts,.js}"],
+  "synchronize": true
+}

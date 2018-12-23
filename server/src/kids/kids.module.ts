@@ -6,9 +6,11 @@ import { KidsService } from './kids.service';
 import { KidRepository } from './repository/kid.repository';
 import { OnModuleInit, Module } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Kid } from './kid.entity';
 
 @Module({
-  imports: [CQRSModule],
+  imports: [CQRSModule, TypeOrmModule.forFeature([Kid])],
   controllers: [KidsController],
   providers: [
     KidsService,
