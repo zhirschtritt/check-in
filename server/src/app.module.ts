@@ -5,7 +5,7 @@ import { KidsModule } from './kids/kids.module';
 import { KidsService } from '../src/kids/kids.service';
 import { KidsController } from './kids/kids.controller';
 import { LocationsController } from './locations/locations.controller';
-import { LocationsService } from './locations/locations/locations.service';
+import { LocationsService } from './locations/locations.service';
 import { LocationsModule } from './locations/locations.module';
 
 @Module({

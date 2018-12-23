@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { LocationsService } from './locations.service';
+import { LocationsService } from '../../src/locations/locations.service';
 
 describe('LocationsService', () => {
   let service: LocationsService;
-  
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [LocationsService],

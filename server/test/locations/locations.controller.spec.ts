@@ -1,9 +1,10 @@
+import 'jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LocationsController } from './locations.controller';
+import { LocationsController } from '../../src/locations/locations.controller';
 
 describe('Locations Controller', () => {
   let module: TestingModule;
-  
+
   beforeAll(async () => {
     module = await Test.createTestingModule({
       controllers: [LocationsController],
