@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {Timestamps} from 'src/shared/timestamps';
 
 @Entity()
-export class Kid {
+export class Kid extends Timestamps {
   @PrimaryGeneratedColumn()
   id: string;
 
@@ -11,6 +12,6 @@ export class Kid {
   @Column()
   last_name: string;
 
-  @Column()
+  @Column({type: 'date'})
   dob: Date;
 }
