@@ -1,7 +1,8 @@
 {
     "defaultSeverity": "error",
     "extends": [
-        "tslint:recommended"
+        "tslint:recommended",
+        "tslint-config-prettier"
     ],
     "jsRules": {
         "no-unused-expression": true
@@ -12,7 +13,7 @@
             true,
             "single"
         ],
-        "indent": false,
+        "indent": true,
         "member-access": [
             false
         ],
