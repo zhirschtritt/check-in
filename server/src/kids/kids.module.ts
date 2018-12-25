@@ -1,23 +1,17 @@
-import { CommandBus, EventBus, CQRSModule } from '@nestjs/cqrs';
-import { CommandHandlers } from './commands/handlers';
-import { EventHandlers } from './events/handlers';
-import { KidsController } from './kids.controller';
-import { KidsService } from './kids.service';
-import { KidRepository } from './repository/kid.repository';
-import { OnModuleInit, Module } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Kid } from './kid.entity';
+import {CommandBus, EventBus, CQRSModule} from '@nestjs/cqrs';
+import {CommandHandlers} from './commands/handlers';
+import {EventHandlers} from './events/handlers';
+import {KidsController} from './kids.controller';
+import {KidsService} from './kids.service';
+import {OnModuleInit, Module} from '@nestjs/common';
+import {ModuleRef} from '@nestjs/core';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {KidEntity} from './kid.entity';
 
 @Module({
-  imports: [CQRSModule, TypeOrmModule.forFeature([Kid])],
+  imports: [CQRSModule, TypeOrmModule.forFeature([KidEntity])],
   controllers: [KidsController],
-  providers: [
-    KidsService,
-    ...CommandHandlers,
-    ...EventHandlers,
-    KidRepository,
-  ],
+  providers: [KidsService, ...CommandHandlers, ...EventHandlers],
 })
 export class KidsModule implements OnModuleInit {
   constructor(

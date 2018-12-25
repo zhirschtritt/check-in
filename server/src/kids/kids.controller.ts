@@ -1,7 +1,15 @@
-import { Controller, Post, Get, Body, Param, UsePipes, ValidationPipe } from '@nestjs/common';
-import { CheckInKidDto, CreateKidDto } from './dto';
-import { KidsService } from './kids.service';
-import { Kid } from './kid.entity';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
+import {CheckInKidDto, CreateKidDto} from './dto';
+import {KidsService} from './kids.service';
+import {KidRO} from './interfaces/kid.interface';
 
 @Controller('kids')
 export class KidsController {
@@ -13,13 +21,18 @@ export class KidsController {
   }
 
   @Get()
-  findAll(): Promise<Kid[]> {
+  findAll(): Promise<KidRO[]> {
     return this.kidsService.findAll();
+  }
+
+  @Get('kid/:id')
+  findOne(@Param('id') id: string): Promise<KidRO> {
+    return this.kidsService.findOne(id);
   }
 
   @UsePipes(new ValidationPipe())
   @Post('kid')
-  async create(@Body('user') kidData: CreateKidDto) {
+  async create(@Body() kidData: CreateKidDto): Promise<KidRO> {
     return this.kidsService.create(kidData);
   }
 }
