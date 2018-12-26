@@ -7,9 +7,14 @@ import {OnModuleInit, Module} from '@nestjs/common';
 import {ModuleRef} from '@nestjs/core';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {KidEntity} from './kid.entity';
+import {EventEntity} from './events/event.entity';
 
 @Module({
-  imports: [CQRSModule, TypeOrmModule.forFeature([KidEntity])],
+  imports: [
+    CQRSModule,
+    TypeOrmModule.forFeature([KidEntity]),
+    TypeOrmModule.forFeature([EventEntity]),
+  ],
   controllers: [KidsController],
   providers: [KidsService, ...CommandHandlers, ...EventHandlers],
 })
