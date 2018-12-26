@@ -6,14 +6,14 @@ import {KidsService} from './kids.service';
 import {OnModuleInit, Module} from '@nestjs/common';
 import {ModuleRef} from '@nestjs/core';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {KidEntity} from './kid.entity';
-import {EventEntity} from './events/event.entity';
+import {Kid} from './kid.entity';
+import {Event} from './events/event.entity';
 
 @Module({
   imports: [
     CQRSModule,
-    TypeOrmModule.forFeature([KidEntity]),
-    TypeOrmModule.forFeature([EventEntity]),
+    TypeOrmModule.forFeature([Kid]),
+    TypeOrmModule.forFeature([Event]),
   ],
   controllers: [KidsController],
   providers: [KidsService, ...CommandHandlers, ...EventHandlers],

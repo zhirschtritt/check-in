@@ -2,7 +2,7 @@ import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
 import {Timestamps} from '../shared/timestamps';
 
 @Entity()
-export class KidEntity extends Timestamps {
+export class Kid extends Timestamps {
   @PrimaryGeneratedColumn()
   id: string;
 

@@ -10,12 +10,12 @@ export enum EventType {
 }
 
 @Entity()
-export class EventEntity {
+export class Event {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('enum')
-  event_type: EventType;
+  @Column()
+  event_type: string;
 
   @Column('simple-json')
   data: object;

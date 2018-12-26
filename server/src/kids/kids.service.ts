@@ -3,7 +3,7 @@ import {Repository, DeleteResult} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CommandBus} from '@nestjs/cqrs';
 import {CheckInCommand} from './commands/impl/check-in.command';
-import {KidEntity} from './kid.entity';
+import {Kid} from './kid.entity';
 import {CreateKidDto, CheckInKidDto} from './dto';
 import {validate} from 'class-validator';
 import {KidRO} from './interfaces/kid.interface';
@@ -11,8 +11,8 @@ import {KidRO} from './interfaces/kid.interface';
 @Injectable()
 export class KidsService {
   constructor(
-    @InjectRepository(KidEntity)
-    private readonly kidRepository: Repository<KidEntity>,
+    @InjectRepository(Kid)
+    private readonly kidRepository: Repository<Kid>,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -24,7 +24,7 @@ export class KidsService {
 
   async findAll(): Promise<KidRO[]> {
     const allKids = await this.kidRepository.find();
-    return allKids.map(kidEntity => this.kidEntityToResponseObject(kidEntity));
+    return allKids.map(kid => this.kidEntityToResponseObject(kid));
   }
 
   async findOne(id: string): Promise<KidRO> {
@@ -63,7 +63,7 @@ export class KidsService {
     }
 
     // create new user
-    const newKid = new KidEntity();
+    const newKid = new Kid();
     newKid.first_name = firstName;
     newKid.last_name = lastName;
     newKid.dob = new Date(dob);
@@ -85,7 +85,7 @@ export class KidsService {
     return await this.kidRepository.delete({id});
   }
 
-  private kidEntityToResponseObject(kid: KidEntity): KidRO {
+  private kidEntityToResponseObject(kid: Kid): KidRO {
     const responseObject: KidRO = {
       id: +kid.id,
       firstName: kid.first_name,
