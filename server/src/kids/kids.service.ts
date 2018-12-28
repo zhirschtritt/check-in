@@ -2,17 +2,21 @@ import {Injectable, HttpException, HttpStatus} from '@nestjs/common';
 import {Repository, DeleteResult} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CommandBus} from '@nestjs/cqrs';
+import {validate} from 'class-validator';
 import {CheckInCommand} from './commands/impl/check-in.command';
 import {Kid} from './kid.entity';
+import {KidEvent, EventType} from './events/event.entity';
 import {CreateKidDto, CheckInKidDto} from './dto';
-import {validate} from 'class-validator';
-import {KidRO} from './interfaces/kid.interface';
+import {KidRO, KidLocationRO} from './interfaces/kid.interface';
+import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
 
 @Injectable()
 export class KidsService {
   constructor(
     @InjectRepository(Kid)
     private readonly kidRepository: Repository<Kid>,
+    @InjectRepository(KidEvent)
+    private readonly eventRepository: Repository<KidEvent>,
     private readonly commandBus: CommandBus,
   ) {}
 
@@ -20,6 +24,23 @@ export class KidsService {
     return await this.commandBus.execute(
       new CheckInCommand(kidId, checkInKidDto.locationId),
     );
+  }
+
+  async getCurrentLocation(kidId: string): Promise<KidLocationRO> {
+    const lastLocationEvent = await this.eventRepository
+      .createQueryBuilder('kid_event')
+      .orderBy('kid_event.created_at', 'DESC')
+      .where('kid_event.name = :eventName', {eventName: EventType.CHECK_IN})
+      .where(`kid_event.data ::jsonb @> :kid`, {kid: {kidId}})
+      .getOne();
+
+    const checkInData = lastLocationEvent.data as KidCheckedInEvent;
+
+    return {
+      eventName: EventType[lastLocationEvent.name],
+      kidId,
+      locationId: checkInData.locationId,
+    };
   }
 
   async findAll(): Promise<KidRO[]> {

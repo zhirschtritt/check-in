@@ -6,16 +6,16 @@ import {
 } from 'typeorm';
 
 export enum EventType {
-  checkIn = 'CHECK-IN',
+  'CHECK_IN',
 }
 
 @Entity()
-export class Event {
+export class KidEvent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  event_type: string;
+  name: string;
 
   @Column('simple-json')
   data: object;

@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import {CheckInKidDto, CreateKidDto} from './dto';
 import {KidsService} from './kids.service';
-import {KidRO} from './interfaces/kid.interface';
+import {KidRO, KidLocationRO} from './interfaces/kid.interface';
 
 @Controller('kids')
 export class KidsController {
@@ -28,6 +28,11 @@ export class KidsController {
   @Get('kid/:id')
   findOne(@Param('id') id: string): Promise<KidRO> {
     return this.kidsService.findOne(id);
+  }
+
+  @Get('kid/:id/location')
+  getCurrentLocation(@Param('id') id: string): Promise<KidLocationRO> {
+    return this.kidsService.getCurrentLocation(id);
   }
 
   @UsePipes(new ValidationPipe())

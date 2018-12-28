@@ -2,20 +2,20 @@ import * as clc from 'cli-color';
 import {IEventHandler, EventsHandler} from '@nestjs/cqrs';
 import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
 import {Repository} from 'typeorm';
-import {Event, EventType} from '../event.entity';
+import {KidEvent, EventType} from '../event.entity';
 import {validate} from 'class-validator';
 import {InjectRepository} from '@nestjs/typeorm';
 
 @EventsHandler(KidCheckedInEvent)
 export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
   constructor(
-    @InjectRepository(Event)
-    private readonly eventRepository: Repository<Event>,
+    @InjectRepository(KidEvent)
+    private readonly eventRepository: Repository<KidEvent>,
   ) {}
   async handle(event: KidCheckedInEvent) {
-    const newCheckIn = new Event();
+    const newCheckIn = new KidEvent();
 
-    newCheckIn.event_type = EventType.checkIn;
+    newCheckIn.name = EventType.CHECK_IN.toString();
     newCheckIn.data = event;
 
     const errors = await validate(newCheckIn);
