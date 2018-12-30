@@ -6,7 +6,7 @@ import {
 } from 'typeorm';
 
 export enum EventType {
-  'CHECK_IN',
+  CHECK_IN = 'CHECK_IN',
 }
 
 @Entity()

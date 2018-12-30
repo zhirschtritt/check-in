@@ -1,3 +1,4 @@
-import { CheckInHandler } from './check-in.handler';
+import {CheckInHandler} from './check-in.handler';
+import {LoadFromHistoryHandler} from './load-from-history';
 
-export const CommandHandlers = [CheckInHandler];
+export const CommandHandlers = [CheckInHandler, LoadFromHistoryHandler];

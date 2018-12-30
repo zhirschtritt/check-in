@@ -1,23 +1,19 @@
-import * as clc from 'cli-color';
 import {EventPublisher, ICommandHandler, CommandHandler} from '@nestjs/cqrs';
 import {CheckInCommand} from '../impl/check-in.command';
-import {KidsService} from '../../kids.service';
-import {Kid} from '../../models/kid.model';
+import {KidAggreagateRoot} from '../../models/kid.model';
 
 @CommandHandler(CheckInCommand)
 export class CheckInHandler implements ICommandHandler<CheckInCommand> {
-  constructor(
-    private readonly kidService: KidsService,
-    private readonly publisher: EventPublisher,
-  ) {}
+  constructor(private readonly publisher: EventPublisher) {}
 
   async execute(command: CheckInCommand, resolve: (value?) => void) {
-    console.log(clc.greenBright('CheckInCommand handled...')); // tslint:disable-line
+    console.log(`CheckInCommand handled: ${JSON.stringify(command, null, 2)}`); // tslint:disable-line
     const {kidId, locationId} = command;
-    const kid = this.publisher.mergeObjectContext(new Kid(kidId));
+    const kid = this.publisher.mergeObjectContext(new KidAggreagateRoot());
 
-    kid.checkIn(locationId);
+    kid.checkIn(kidId, locationId);
     kid.commit();
+
     resolve();
   }
 }

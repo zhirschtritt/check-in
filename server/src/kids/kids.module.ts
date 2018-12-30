@@ -23,13 +23,16 @@ export class KidsModule implements OnModuleInit {
     private readonly moduleRef: ModuleRef,
     private readonly command$: CommandBus,
     private readonly event$: EventBus,
+    private readonly kidsService: KidsService,
   ) {}
 
-  onModuleInit() {
+  async onModuleInit() {
     this.command$.setModuleRef(this.moduleRef);
     this.event$.setModuleRef(this.moduleRef);
 
     this.event$.register(EventHandlers);
     this.command$.register(CommandHandlers);
+
+    await this.kidsService.loadEventsFromDay();
   }
 }

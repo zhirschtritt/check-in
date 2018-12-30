@@ -1,20 +1,21 @@
 import {Injectable, HttpException, HttpStatus} from '@nestjs/common';
 import {Repository, DeleteResult} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CommandBus} from '@nestjs/cqrs';
+import {CommandBus, EventPublisher} from '@nestjs/cqrs';
 import {validate} from 'class-validator';
 import {CheckInCommand} from './commands/impl/check-in.command';
-import {Kid} from './kid.entity';
+import {Kid as KidEntity} from './kid.entity';
 import {KidEvent, EventType} from './events/event.entity';
 import {CreateKidDto, CheckInKidDto} from './dto';
 import {KidRO, KidLocationRO} from './interfaces/kid.interface';
 import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
+import {LoadFromHistory} from './commands/impl/load-from-history.command';
 
 @Injectable()
 export class KidsService {
   constructor(
-    @InjectRepository(Kid)
-    private readonly kidRepository: Repository<Kid>,
+    @InjectRepository(KidEntity)
+    private readonly kidRepository: Repository<KidEntity>,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
     private readonly commandBus: CommandBus,
@@ -24,6 +25,21 @@ export class KidsService {
     return await this.commandBus.execute(
       new CheckInCommand(kidId, checkInKidDto.locationId),
     );
+  }
+
+  async loadEventsFromDay() {
+    // tslint:disable-next-line:no-console
+    console.log('loading all events');
+
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const allEventsFromDay = await this.eventRepository
+      .createQueryBuilder('kid_event')
+      .where('kid_event.created_at > :startOfDay', {startOfDay})
+      .getMany();
+
+    return await this.commandBus.execute(new LoadFromHistory(allEventsFromDay));
   }
 
   async getCurrentLocation(kidId: string): Promise<KidLocationRO> {
@@ -84,7 +100,7 @@ export class KidsService {
     }
 
     // create new user
-    const newKid = new Kid();
+    const newKid = new KidEntity();
     newKid.first_name = firstName;
     newKid.last_name = lastName;
     newKid.dob = new Date(dob);
@@ -106,7 +122,7 @@ export class KidsService {
     return await this.kidRepository.delete({id});
   }
 
-  private kidEntityToResponseObject(kid: Kid): KidRO {
+  private kidEntityToResponseObject(kid: KidEntity): KidRO {
     const responseObject: KidRO = {
       id: +kid.id,
       firstName: kid.first_name,
