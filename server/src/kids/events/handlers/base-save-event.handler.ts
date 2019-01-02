@@ -5,7 +5,6 @@ import {KidEvent, EventType} from '../event.entity';
 import {validate} from 'class-validator';
 import {InjectRepository} from '@nestjs/typeorm';
 
-@EventsHandler(KidCheckedInEvent)
 export class BaseSaveKidEventHandler
   implements IEventHandler<KidCheckedInEvent> {
   constructor(
@@ -14,13 +13,15 @@ export class BaseSaveKidEventHandler
   ) {}
 
   async handle(event: KidCheckedInEvent) {
-    await this.saveEvent(event, EventType.CHECK_IN);
+    // tslint:disable-next-line:no-console
+    console.log('saving event');
+    await this.saveEvent(event, 'CHECK_IN');
   }
 
   private async saveEvent(event: IEvent, eventType: EventType) {
     const newCheckIn = new KidEvent();
 
-    newCheckIn.name = eventType;
+    newCheckIn.type = eventType;
     newCheckIn.data = event;
 
     const errors = await validate(newCheckIn);

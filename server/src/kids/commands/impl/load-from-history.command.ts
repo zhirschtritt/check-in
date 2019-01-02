@@ -1,5 +1,6 @@
-import {ICommand, IEvent} from '@nestjs/cqrs';
+import {ICommand} from '@nestjs/cqrs';
+import {KidEvent} from 'src/kids/events/event.entity';
 
 export class LoadFromHistory implements ICommand {
-  constructor(public readonly history: IEvent[]) {}
+  constructor(public readonly rawHistory: KidEvent[]) {}
 }

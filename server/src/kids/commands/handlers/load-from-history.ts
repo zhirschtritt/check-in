@@ -9,10 +9,11 @@ export class LoadFromHistoryHandler
 
   async execute(command: LoadFromHistory, resolve: (value?) => void) {
     console.log(`LoadFromHistory handled: ${JSON.stringify(command, null, 2)}`); // tslint:disable-line
-    const {history} = command;
+    const {rawHistory} = command;
+
     const kid = this.publisher.mergeObjectContext(new KidAggreagateRoot());
 
-    kid.loadFromHistory(history);
+    kid.loadFromHistory(rawHistory);
     resolve();
   }
 }

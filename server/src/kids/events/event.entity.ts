@@ -5,9 +5,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
-export enum EventType {
-  CHECK_IN = 'CHECK_IN',
-}
+export type EventType = 'CHECK_IN' | 'LOCATED';
 
 @Entity()
 export class KidEvent {
@@ -15,7 +13,7 @@ export class KidEvent {
   id: string;
 
   @Column()
-  name: string;
+  type: EventType;
 
   @Column('simple-json')
   data: object;

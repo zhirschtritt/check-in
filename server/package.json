@@ -19,6 +19,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@lokidb/fs-storage": "^2.0.0-beta.8",
+    "@lokidb/loki": "^2.0.0-beta.8",
     "@nestjs/common": "^5.4.0",
     "@nestjs/core": "^5.4.0",
     "@nestjs/cqrs": "^5.1.1",
