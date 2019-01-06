@@ -4,18 +4,15 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
 } from 'typeorm';
-
-export enum EventType {
-  CHECK_IN = 'CHECK_IN',
-}
+import {EventType} from '../interfaces/kid-event.interface';
 
 @Entity()
 export class KidEvent {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  name: string;
+  @Column({type: 'varchar'})
+  type: EventType;
 
   @Column('simple-json')
   data: object;

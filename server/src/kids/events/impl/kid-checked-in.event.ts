@@ -1,8 +1,11 @@
-import { IEvent } from '@nestjs/cqrs';
+import {IEvent} from '@nestjs/cqrs';
 
 export class KidCheckedInEvent implements IEvent {
-    constructor(
-        public readonly kidId: string,
-        public readonly locationId: string,
-    ){}
+  public readonly kidId: string;
+  public readonly locationId: string;
+
+  constructor(data: {kidId: string; locationId: string}) {
+    this.kidId = data.kidId;
+    this.locationId = data.locationId;
+  }
 }

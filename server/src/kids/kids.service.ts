@@ -1,15 +1,16 @@
 import {Injectable, HttpException, HttpStatus} from '@nestjs/common';
 import {Repository, DeleteResult} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CommandBus, EventPublisher} from '@nestjs/cqrs';
+import {CommandBus} from '@nestjs/cqrs';
 import {validate} from 'class-validator';
 import {CheckInCommand} from './commands/impl/check-in.command';
 import {Kid as KidEntity} from './kid.entity';
-import {KidEvent, EventType} from './events/event.entity';
+import {KidEvent} from './events/kid-event.entity';
 import {CreateKidDto, CheckInKidDto} from './dto';
 import {KidRO, KidLocationRO} from './interfaces/kid.interface';
 import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
 import {LoadFromHistory} from './commands/impl/load-from-history.command';
+import {EventType} from './interfaces/kid-event.interface';
 
 @Injectable()
 export class KidsService {
@@ -22,7 +23,7 @@ export class KidsService {
   ) {}
 
   async checkIn(kidId: string, checkInKidDto: CheckInKidDto) {
-    return await this.commandBus.execute(
+    return this.commandBus.execute(
       new CheckInCommand(kidId, checkInKidDto.locationId),
     );
   }
@@ -39,21 +40,24 @@ export class KidsService {
       .where('kid_event.created_at > :startOfDay', {startOfDay})
       .getMany();
 
-    return await this.commandBus.execute(new LoadFromHistory(allEventsFromDay));
+    const rawHistory = allEventsFromDay;
+    return this.commandBus.execute(new LoadFromHistory(rawHistory));
   }
 
   async getCurrentLocation(kidId: string): Promise<KidLocationRO> {
     const lastLocationEvent = await this.eventRepository
       .createQueryBuilder('kid_event')
       .orderBy('kid_event.created_at', 'DESC')
-      .where('kid_event.name = :eventName', {eventName: EventType.CHECK_IN})
+      .where('kid_event.name = :eventName', {
+        eventName: EventType.kidCheckedInEvent,
+      })
       .where(`kid_event.data ::jsonb @> :kid`, {kid: {kidId}})
       .getOne();
 
     const checkInData = lastLocationEvent.data as KidCheckedInEvent;
 
     return {
-      eventName: EventType[lastLocationEvent.name],
+      eventName: EventType[lastLocationEvent.type],
       kidId,
       locationId: checkInData.locationId,
     };
@@ -119,7 +123,7 @@ export class KidsService {
   }
 
   async delete(id: string): Promise<DeleteResult> {
-    return await this.kidRepository.delete({id});
+    return this.kidRepository.delete({id});
   }
 
   private kidEntityToResponseObject(kid: KidEntity): KidRO {

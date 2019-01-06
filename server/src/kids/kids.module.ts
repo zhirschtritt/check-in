@@ -3,20 +3,46 @@ import {CommandHandlers} from './commands/handlers';
 import {EventHandlers} from './events/handlers';
 import {KidsController} from './kids.controller';
 import {KidsService} from './kids.service';
-import {OnModuleInit, Module} from '@nestjs/common';
+import {OnModuleInit, Module, Inject} from '@nestjs/common';
 import {ModuleRef} from '@nestjs/core';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {Kid} from './kid.entity';
-import {KidEvent} from './events/event.entity';
+import {KidEvent} from './events/kid-event.entity';
+import {Loki} from '@lokidb/loki';
+import {ProjectionStorage} from './projections/projection-storage';
+import {KidEventFactory} from './events/kid-event.factory';
+import {KidAggregateRoot} from './models/kid.model';
+
+const lokiDB = {
+  provide: 'LokiDB',
+  useFactory: () => {
+    return new Loki();
+  },
+};
+
+const kidAggregateRoot = {
+  provide: 'kidAggregateRoot',
+  useFactory: () => {
+    return new KidAggregateRoot(new KidEventFactory());
+  },
+};
 
 @Module({
   imports: [
+    ProjectionStorage,
     CQRSModule,
     TypeOrmModule.forFeature([Kid]),
     TypeOrmModule.forFeature([KidEvent]),
   ],
   controllers: [KidsController],
-  providers: [KidsService, ...CommandHandlers, ...EventHandlers],
+  providers: [
+    KidsService,
+    ...CommandHandlers,
+    ...EventHandlers,
+    lokiDB,
+    ProjectionStorage,
+    kidAggregateRoot,
+  ],
 })
 export class KidsModule implements OnModuleInit {
   constructor(
@@ -24,6 +50,7 @@ export class KidsModule implements OnModuleInit {
     private readonly command$: CommandBus,
     private readonly event$: EventBus,
     private readonly kidsService: KidsService,
+    @Inject('LokiDB') private readonly loki: Loki,
   ) {}
 
   async onModuleInit() {
@@ -33,6 +60,13 @@ export class KidsModule implements OnModuleInit {
     this.event$.register(EventHandlers);
     this.command$.register(CommandHandlers);
 
+    await this.initializeLokiDB(); // TODO: move this init to /projections
+
     await this.kidsService.loadEventsFromDay();
+  }
+
+  // create all needed collections for cqrs projections
+  async initializeLokiDB() {
+    this.loki.addCollection('kidLocations');
   }
 }
