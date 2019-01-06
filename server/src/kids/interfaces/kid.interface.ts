@@ -1,5 +1,5 @@
 import {Location} from '../../locations/location.entity';
-import {EventType} from '../events/event.entity';
+import {EventType} from './kid-event.interface';
 
 export interface KidRO {
   id: number;

@@ -10,6 +10,7 @@ export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
     // tslint:disable-next-line:no-console
     console.log(`Handling event check-in: ${JSON.stringify(event, null, 2)}`);
 
+    // TODO: inject specific collection as aggregate at boot
     const kidLocations = this.lokiDB.getCollection('kidLocations');
     const newKidLocation = {
       kidId: event.kidId,

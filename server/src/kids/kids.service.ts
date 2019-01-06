@@ -5,11 +5,12 @@ import {CommandBus} from '@nestjs/cqrs';
 import {validate} from 'class-validator';
 import {CheckInCommand} from './commands/impl/check-in.command';
 import {Kid as KidEntity} from './kid.entity';
-import {KidEvent, EventType} from './events/event.entity';
+import {KidEvent} from './events/kid-event.entity';
 import {CreateKidDto, CheckInKidDto} from './dto';
 import {KidRO, KidLocationRO} from './interfaces/kid.interface';
 import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
 import {LoadFromHistory} from './commands/impl/load-from-history.command';
+import {EventType} from './interfaces/kid-event.interface';
 
 @Injectable()
 export class KidsService {
@@ -48,7 +49,7 @@ export class KidsService {
       .createQueryBuilder('kid_event')
       .orderBy('kid_event.created_at', 'DESC')
       .where('kid_event.name = :eventName', {
-        eventName: EventType.KidCheckedInEvent,
+        eventName: EventType.kidCheckedInEvent,
       })
       .where(`kid_event.data ::jsonb @> :kid`, {kid: {kidId}})
       .getOne();
@@ -56,7 +57,7 @@ export class KidsService {
     const checkInData = lastLocationEvent.data as KidCheckedInEvent;
 
     return {
-      eventName: EventType[lastLocationEvent.name],
+      eventName: EventType[lastLocationEvent.type],
       kidId,
       locationId: checkInData.locationId,
     };
