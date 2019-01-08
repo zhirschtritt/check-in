@@ -3,15 +3,18 @@ import {ICommand} from '@nestjs/cqrs';
 import {CheckInCommand} from './impl/check-in.command';
 import {LoadFromHistory} from './impl/load-from-history.command';
 
-type CommandName = 'CHECK-IN' | 'LOAD-FROM-HISTORY';
+export enum CommandName {
+  CheckIn = 'CHECK-IN',
+  LoadFromHistory = 'LOAD-FROM-HISTORY',
+}
 
 @Injectable()
 export class KidCommandFactory {
   manufacture(commandName: CommandName, data: any): ICommand {
     switch (commandName) {
-      case 'CHECK-IN':
+      case CommandName.CheckIn:
         return new CheckInCommand(data);
-      case 'LOAD-FROM-HISTORY':
+      case CommandName.LoadFromHistory:
         return new LoadFromHistory(data);
       default:
         throw new Error(`No matching command for command type ${commandName}`);

@@ -19,7 +19,7 @@ export class CheckInHandler implements ICommandHandler<CheckInCommand> {
     private readonly publisher: EventPublisher,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
-    @Inject('kidAggregateRoot')
+    @Inject('KidAggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {}
 

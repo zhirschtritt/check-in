@@ -12,6 +12,7 @@ import {Loki} from '@lokidb/loki';
 import {ProjectionStorage} from './projections/projection-storage';
 import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRoot} from './models/kid.model';
+import {KidCommandFactory} from './commands/command.factory';
 
 const lokiDB = {
   provide: 'LokiDB',
@@ -20,11 +21,12 @@ const lokiDB = {
   },
 };
 
-const kidAggregateRoot = {
-  provide: 'kidAggregateRoot',
-  useFactory: () => {
-    return new KidAggregateRoot(new KidEventFactory());
+const KidAggregateRootProvider = {
+  provide: 'KidAggregateRoot',
+  useFactory: (eventFactory: KidEventFactory) => {
+    return new KidAggregateRoot(eventFactory);
   },
+  inject: [KidEventFactory],
 };
 
 @Module({
@@ -36,12 +38,13 @@ const kidAggregateRoot = {
   ],
   controllers: [KidsController],
   providers: [
-    KidsService,
-    ...CommandHandlers,
-    ...EventHandlers,
     lokiDB,
     ProjectionStorage,
-    kidAggregateRoot,
+    KidEventFactory,
+    KidAggregateRootProvider,
+    ...EventHandlers,
+    ...CommandHandlers,
+    KidsService,
   ],
 })
 export class KidsModule implements OnModuleInit {

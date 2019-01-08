@@ -8,7 +8,7 @@ export class LoadFromHistoryHandler
   implements ICommandHandler<LoadFromHistory> {
   constructor(
     private readonly publisher: EventPublisher,
-    @Inject('kidAggregateRoot')
+    @Inject('KidAggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {}
 
