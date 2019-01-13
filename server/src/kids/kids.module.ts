@@ -66,11 +66,9 @@ export class KidsModule implements OnModuleInit {
     this.event$.register(EventHandlers);
     this.command$.register(CommandHandlers);
 
-    const start = new Date().getTime();
-    await this.kidsService.loadEventsFromDay();
-    const end = new Date().getTime();
+    await _inMemoryDb.delete();
+    await _inMemoryDb.open();
 
-    // tslint:disable-next-line:no-console
-    console.log(`Took ${(end - start) / 1000} seconds to load events`);
+    await this.kidsService.loadEventsFromDay();
   }
 }

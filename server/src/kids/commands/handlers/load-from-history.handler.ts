@@ -1,18 +1,18 @@
 import {EventPublisher, ICommandHandler, CommandHandler} from '@nestjs/cqrs';
 import {KidAggregateRoot} from '../../models/kid.model';
-import {LoadFromHistory} from '../impl/load-from-history.command';
+import {LoadFromHistoryCommand} from '../impl/load-from-history.command';
 import {Inject} from '@nestjs/common';
 
-@CommandHandler(LoadFromHistory)
+@CommandHandler(LoadFromHistoryCommand)
 export class LoadFromHistoryHandler
-  implements ICommandHandler<LoadFromHistory> {
+  implements ICommandHandler<LoadFromHistoryCommand> {
   constructor(
     private readonly publisher: EventPublisher,
     @Inject('KidAggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {}
 
-  async execute(command: LoadFromHistory, resolve: (value?) => void) {
+  async execute(command: LoadFromHistoryCommand, resolve: (value?) => void) {
     console.log(`LoadFromHistory handled: ${JSON.stringify(command, null, 2)}`); // tslint:disable-line
     const {rawHistory} = command;
 

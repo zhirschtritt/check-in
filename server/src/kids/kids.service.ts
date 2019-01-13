@@ -9,8 +9,8 @@ import {CreateKidDto, CheckInKidDto} from './dto';
 import {KidRO, KidLocationRO} from './interfaces/kid.interface';
 import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
 import {EventType} from './interfaces/kid-event.interface';
-import {LoadFromHistory} from './commands/impl/load-from-history.command';
 import {CheckInCommand} from './commands/impl/check-in.command';
+import {LoadFromHistoryCommand} from './commands/impl/load-from-history.command';
 
 @Injectable()
 export class KidsService {
@@ -41,7 +41,7 @@ export class KidsService {
       .getMany();
 
     const rawHistory = allEventsFromDay;
-    const command = new LoadFromHistory(rawHistory);
+    const command = new LoadFromHistoryCommand(rawHistory);
 
     return this.commandBus.execute(command);
   }

@@ -20,9 +20,10 @@ export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
     const newKidLocation: KidLocation = {
       kidId: event.kidId,
       locationId: event.locationId,
+      revision: 0,
     };
 
-    await this.db
+    this.db
       .transaction('rw', this.kidLocationsProjection, async () => {
         const currentLocation = await this.kidLocationsProjection
           .where('kidId')
@@ -32,18 +33,24 @@ export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
         if (currentLocation) {
           this.kidLocationsProjection.update(currentLocation.id, {
             locationId: newKidLocation.locationId,
+            revision: currentLocation.revision += 1,
           });
         } else {
           this.kidLocationsProjection.add(newKidLocation);
         }
+
+        const updatedKidLocations = await this.kidLocationsProjection.toArray();
+
+        // tslint:disable-next-line:no-console
+        console.log(
+          'Updating kidLocation aggregate: ',
+          `${JSON.stringify(updatedKidLocations, null, 2)}`,
+        );
       })
       .catch(err => {
         // tslint:disable-next-line:no-console
         console.error(err, 'Error updating projection');
         throw new Error('Error updating projection');
       });
-
-    // tslint:disable-next-line:no-console
-    console.log('Updating kidLocation aggregate');
   }
 }
