@@ -1,28 +1,49 @@
-import {IEventHandler, EventsHandler, IEvent} from '@nestjs/cqrs';
-import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
-import Loki from '@lokidb/loki';
+import Dexie from 'dexie';
 import {Inject} from '@nestjs/common';
+import {IEventHandler, EventsHandler} from '@nestjs/cqrs';
+import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
+import {KidLocation} from '../../projections/in-memory-db';
 
 @EventsHandler(KidCheckedInEvent)
 export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
-  constructor(@Inject('LokiDB') private readonly lokiDB: Loki) {}
+  constructor(
+    @Inject('kidLocations')
+    private readonly kidLocationsProjection: Dexie.Table<KidLocation, number>,
+    @Inject('inMemoryDb')
+    private readonly db: Dexie,
+  ) {}
+
   async handle(event: KidCheckedInEvent) {
     // tslint:disable-next-line:no-console
     console.log(`Handling event check-in: ${JSON.stringify(event, null, 2)}`);
 
-    // TODO: inject specific collection as aggregate at boot
-    const kidLocations = this.lokiDB.getCollection('kidLocations');
-    const newKidLocation = {
+    const newKidLocation: KidLocation = {
       kidId: event.kidId,
-      location: event.locationId,
+      locationId: event.locationId,
     };
 
-    kidLocations.insert(newKidLocation); // TODO: upsert
+    await this.db
+      .transaction('rw', this.kidLocationsProjection, async () => {
+        const currentLocation = await this.kidLocationsProjection
+          .where('kidId')
+          .equals(newKidLocation.kidId)
+          .first();
+
+        if (currentLocation) {
+          this.kidLocationsProjection.update(currentLocation.id, {
+            locationId: newKidLocation.locationId,
+          });
+        } else {
+          this.kidLocationsProjection.add(newKidLocation);
+        }
+      })
+      .catch(err => {
+        // tslint:disable-next-line:no-console
+        console.error(err, 'Error updating projection');
+        throw new Error('Error updating projection');
+      });
 
     // tslint:disable-next-line:no-console
-    console.log(
-      'Updating kidLocation aggregate: ',
-      JSON.stringify(kidLocations.toJSON(), null, 2),
-    );
+    console.log('Updating kidLocation aggregate');
   }
 }

@@ -19,8 +19,6 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@lokidb/fs-storage": "^2.0.0-beta.8",
-    "@lokidb/loki": "^2.0.0-beta.8",
     "@nestjs/common": "^5.4.0",
     "@nestjs/core": "^5.4.0",
     "@nestjs/cqrs": "^5.1.1",
@@ -28,6 +26,8 @@
     "@nestjs/typeorm": "^5.2.2",
     "class-transformer": "^0.2.0",
     "class-validator": "^0.9.1",
+    "dexie": "^2.0.4",
+    "indexeddbshim": "^4.1.0",
     "pg": "^7.7.1",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",
