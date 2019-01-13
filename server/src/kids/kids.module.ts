@@ -3,15 +3,14 @@ import {CommandHandlers} from './commands/handlers';
 import {EventHandlers} from './events/handlers';
 import {KidsController} from './kids.controller';
 import {KidsService} from './kids.service';
-import {OnModuleInit, Module, Inject} from '@nestjs/common';
+import {OnModuleInit, Module} from '@nestjs/common';
 import {ModuleRef} from '@nestjs/core';
-import {TypeOrmModule, InjectEntityManager} from '@nestjs/typeorm';
+import {TypeOrmModule} from '@nestjs/typeorm';
 import {Kid} from './kid.entity';
 import {KidEvent} from './events/kid-event.entity';
 import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRoot} from './models/kid.model';
 import {InMemoryDb} from './projections/in-memory-db';
-import Dexie from 'dexie';
 
 const KidAggregateRootProvider = {
   provide: 'KidAggregateRoot',
@@ -67,6 +66,11 @@ export class KidsModule implements OnModuleInit {
     this.event$.register(EventHandlers);
     this.command$.register(CommandHandlers);
 
+    const start = new Date().getTime();
     await this.kidsService.loadEventsFromDay();
+    const end = new Date().getTime();
+
+    // tslint:disable-next-line:no-console
+    console.log(`Took ${(end - start) / 1000} seconds to load events`);
   }
 }

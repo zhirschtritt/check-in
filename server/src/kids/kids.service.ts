@@ -9,29 +9,21 @@ import {CreateKidDto, CheckInKidDto} from './dto';
 import {KidRO, KidLocationRO} from './interfaces/kid.interface';
 import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
 import {EventType} from './interfaces/kid-event.interface';
-import {KidCommandFactory, CommandName} from './commands/command.factory';
-
-const _kidCommandFactory = new KidCommandFactory();
+import {LoadFromHistory} from './commands/impl/load-from-history.command';
+import {CheckInCommand} from './commands/impl/check-in.command';
 
 @Injectable()
 export class KidsService {
-  private readonly kidCommandFactory: KidCommandFactory;
-
   constructor(
     @InjectRepository(KidEntity)
     private readonly kidRepository: Repository<KidEntity>,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
     private readonly commandBus: CommandBus,
-  ) {
-    this.kidCommandFactory = _kidCommandFactory;
-  }
+  ) {}
 
   async checkIn(kidId: string, checkInKidDto: CheckInKidDto) {
-    const command = this.kidCommandFactory.manufacture(CommandName.CheckIn, {
-      kidId,
-      locationId: checkInKidDto.locationId,
-    });
+    const command = new CheckInCommand(kidId, checkInKidDto.locationId);
 
     return this.commandBus.execute(command);
   }
@@ -49,10 +41,7 @@ export class KidsService {
       .getMany();
 
     const rawHistory = allEventsFromDay;
-    const command = this.kidCommandFactory.manufacture(
-      CommandName.LoadFromHistory,
-      {rawHistory},
-    );
+    const command = new LoadFromHistory(rawHistory);
 
     return this.commandBus.execute(command);
   }
