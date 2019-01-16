@@ -19,12 +19,19 @@ export class KidAggregateRoot extends AggregateRoot {
     private readonly eventRepository: Repository<KidEvent>,
   ) {
     super();
+    this.autoCommit = true;
   }
 
-  checkIn(kidId: string, locationId: string): IEvent {
+  async checkIn(kidId: string, locationId: string): Promise<IEvent> {
     const checkInEvent = new KidCheckedInEvent({kidId, locationId});
+    const kidEvent = await this.saveEvent(
+      checkInEvent,
+      EventType.kidCheckedInEvent,
+    );
+
     this.apply(checkInEvent);
-    return checkInEvent;
+
+    return kidEvent;
   }
 
   async checkOut(kidId: string): Promise<IEvent> {
@@ -51,10 +58,7 @@ export class KidAggregateRoot extends AggregateRoot {
   loadFromHistory(rawHistory: KidEvent[]) {
     rawHistory
       .map(event => this.kidEventFactory.manufacture(event.type, event.data))
-      .forEach(kidEvent => {
-        this.apply(kidEvent);
-        this.commit();
-      });
+      .forEach(kidEvent => this.apply(kidEvent));
   }
 
   async saveEvent(event: IEvent, eventType: EventType) {

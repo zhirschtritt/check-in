@@ -23,7 +23,6 @@ export class CheckOutHandler implements ICommandHandler<CheckOutCommand> {
 
     try {
       const event = await kid.checkOut(kidId);
-      kid.commit();
       resolve({event});
     } catch (err) {
       this.logger.error({error: err.message}, 'Error creating event');
