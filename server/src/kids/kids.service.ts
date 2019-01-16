@@ -11,26 +11,36 @@ import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
 import {EventType} from './interfaces/kid-event.interface';
 import {CheckInCommand} from './commands/impl/check-in.command';
 import {LoadFromHistoryCommand} from './commands/impl/load-from-history.command';
+import {CheckOutCommand} from './commands/impl/check-out.command';
+import {AppLogger, LoggerFactory} from 'src/common/logger';
 
 @Injectable()
 export class KidsService {
+  private readonly logger: AppLogger;
   constructor(
     @InjectRepository(KidEntity)
     private readonly kidRepository: Repository<KidEntity>,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
     private readonly commandBus: CommandBus,
-  ) {}
+  ) {
+    this.logger = LoggerFactory('KidsService');
+  }
 
   async checkIn(kidId: string, checkInKidDto: CheckInKidDto) {
     const command = new CheckInCommand(kidId, checkInKidDto.locationId);
 
-    return this.commandBus.execute(command);
+    return await this.commandBus.execute(command);
+  }
+
+  async checkOut(kidId: string) {
+    const command = new CheckOutCommand(kidId);
+
+    return await this.commandBus.execute(command);
   }
 
   async loadEventsFromDay() {
-    // tslint:disable-next-line:no-console
-    console.log('loading all events');
+    this.logger.debug({}, 'loading all events from day');
 
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);

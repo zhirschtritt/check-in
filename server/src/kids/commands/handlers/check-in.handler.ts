@@ -12,22 +12,24 @@ import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {EventType} from 'src/kids/interfaces/kid-event.interface';
 import {Inject} from '@nestjs/common';
+import {AppLogger, LoggerFactory} from 'src/common/logger';
 
 @CommandHandler(CheckInCommand)
 export class CheckInHandler implements ICommandHandler<CheckInCommand> {
+  private readonly logger: AppLogger;
   constructor(
     private readonly publisher: EventPublisher,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
     @Inject('KidAggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
-  ) {}
+  ) {
+    this.logger = LoggerFactory('CheckInHandler');
+  }
 
   async execute(command: CheckInCommand, resolve: (value?) => void) {
-    // tslint:disable-next-line:no-console
-    console.log(
-      `Handling check-in command: ${JSON.stringify(command, null, 2)}`,
-    );
+    this.logger.debug({command}, 'Handling check-in command');
+
     const {kidId, locationId} = command;
     const kid = this.publisher.mergeObjectContext(this.kidAggregateRoot);
 

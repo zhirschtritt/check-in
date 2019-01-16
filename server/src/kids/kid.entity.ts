@@ -1,5 +1,5 @@
 import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
-import {Timestamps} from '../shared/timestamps';
+import {Timestamps} from 'src/common/timestamps';
 
 @Entity()
 export class Kid extends Timestamps {

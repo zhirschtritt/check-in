@@ -1,12 +1,12 @@
 import Dexie from 'dexie';
 import {Inject} from '@nestjs/common';
 import {IEventHandler, EventsHandler} from '@nestjs/cqrs';
-import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
 import {KidLocation} from '../../interfaces/kid-projections.interface';
+import {KidCheckedOutEvent} from '../impl/kid-checked-out.event';
 import {AppLogger, LoggerFactory} from 'src/common/logger';
 
-@EventsHandler(KidCheckedInEvent)
-export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
+@EventsHandler(KidCheckedOutEvent)
+export class KidCheckedOutHandler implements IEventHandler<KidCheckedOutEvent> {
   private readonly logger: AppLogger;
   constructor(
     @Inject('kidLocations')
@@ -14,32 +14,24 @@ export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
     @Inject('inMemoryDb')
     private readonly db: Dexie,
   ) {
-    this.logger = LoggerFactory('KidCheckedInHandler');
+    this.logger = LoggerFactory('KidCheckedOutHandler');
   }
 
-  async handle(event: KidCheckedInEvent) {
-    this.logger.debug({event}, 'Handling event check-in');
-
-    const newKidLocation: KidLocation = {
-      kidId: event.kidId,
-      locationId: event.locationId,
-      revision: 0,
-    };
+  async handle(event: KidCheckedOutEvent) {
+    this.logger.debug({event}, 'Handling event check-out');
 
     this.db
       .transaction('rw', this.kidLocationsProjection, async () => {
         const currentLocation = await this.kidLocationsProjection
           .where('kidId')
-          .equals(newKidLocation.kidId)
+          .equals(event.kidId)
           .first();
 
-        if (currentLocation) {
+        if (currentLocation && currentLocation.locationId) {
           this.kidLocationsProjection.update(currentLocation.id, {
-            locationId: newKidLocation.locationId,
+            locationId: '',
             revision: currentLocation.revision += 1,
           });
-        } else {
-          this.kidLocationsProjection.add(newKidLocation);
         }
 
         const updatedKidLocations = await this.kidLocationsProjection.toArray();

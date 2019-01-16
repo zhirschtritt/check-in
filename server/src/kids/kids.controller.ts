@@ -20,6 +20,11 @@ export class KidsController {
     await this.kidsService.checkIn(id, dto);
   }
 
+  @Post(':id/checkOut')
+  async checkOut(@Param('id') id: string): Promise<any> {
+    return await this.kidsService.checkOut(id);
+  }
+
   @Get()
   findAll(): Promise<KidRO[]> {
     return this.kidsService.findAll();

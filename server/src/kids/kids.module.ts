@@ -11,14 +11,7 @@ import {KidEvent} from './events/kid-event.entity';
 import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRoot} from './models/kid.model';
 import {InMemoryDb} from './projections/in-memory-db';
-
-const KidAggregateRootProvider = {
-  provide: 'KidAggregateRoot',
-  useFactory: (eventFactory: KidEventFactory) => {
-    return new KidAggregateRoot(eventFactory);
-  },
-  inject: [KidEventFactory],
-};
+import {AppLogger, LoggerFactory} from 'src/common/logger';
 
 const _inMemoryDb = new InMemoryDb();
 
@@ -34,6 +27,14 @@ const ProjectionDbTables = _inMemoryDb.tables.map(table => {
   };
 });
 
+// const KidAggregateRootProvider = {
+//   provide: 'KidAggregateRoot',
+//   useFactory: (eventFactory: KidEventFactory, projectionsDb: InMemoryDb) => {
+//     return new KidAggregateRoot(eventFactory, projectionsDb);
+//   },
+//   inject: [KidEventFactory, inMemoryDb],
+// };
+
 @Module({
   imports: [
     CQRSModule,
@@ -43,7 +44,7 @@ const ProjectionDbTables = _inMemoryDb.tables.map(table => {
   controllers: [KidsController],
   providers: [
     KidEventFactory,
-    KidAggregateRootProvider,
+    KidAggregateRoot,
     ...EventHandlers,
     ...CommandHandlers,
     ...ProjectionDbTables,
