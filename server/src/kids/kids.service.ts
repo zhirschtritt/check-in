@@ -6,12 +6,7 @@ import {validate} from 'class-validator';
 import {Kid as KidEntity} from './kid.entity';
 import {KidEvent} from './events/kid-event.entity';
 import {CreateKidDto, CheckInKidDto} from './dto';
-import {KidRO, KidLocationRO} from './interfaces/kid.interface';
-import {KidCheckedInEvent} from './events/impl/kid-checked-in.event';
-import {EventType} from './interfaces/kid-event.interface';
-import {CheckInCommand} from './commands/impl/check-in.command';
-import {LoadFromHistoryCommand} from './commands/impl/load-from-history.command';
-import {CheckOutCommand} from './commands/impl/check-out.command';
+import {KidRO} from './interfaces/kid.interface';
 import {AppLogger, LoggerFactory} from 'src/common/logger';
 
 @Injectable()
@@ -25,54 +20,6 @@ export class KidsService {
     private readonly commandBus: CommandBus,
   ) {
     this.logger = LoggerFactory('KidsService');
-  }
-
-  async checkIn(kidId: string, checkInKidDto: CheckInKidDto) {
-    const command = new CheckInCommand(kidId, checkInKidDto.locationId);
-
-    return await this.commandBus.execute(command);
-  }
-
-  async checkOut(kidId: string) {
-    const command = new CheckOutCommand(kidId);
-
-    return await this.commandBus.execute(command);
-  }
-
-  async loadEventsFromDay() {
-    this.logger.debug({}, 'loading all events from day');
-
-    const startOfDay = new Date();
-    startOfDay.setHours(0, 0, 0, 0);
-
-    const allEventsFromDay = await this.eventRepository
-      .createQueryBuilder('kid_event')
-      .where('kid_event.created_at > :startOfDay', {startOfDay})
-      .getMany();
-
-    const rawHistory = allEventsFromDay;
-    const command = new LoadFromHistoryCommand(rawHistory);
-
-    return this.commandBus.execute(command);
-  }
-
-  async getCurrentLocation(kidId: string): Promise<KidLocationRO> {
-    const lastLocationEvent = await this.eventRepository
-      .createQueryBuilder('kid_event')
-      .orderBy('kid_event.created_at', 'DESC')
-      .where('kid_event.name = :eventName', {
-        eventName: EventType.kidCheckedInEvent,
-      })
-      .where(`kid_event.data ::jsonb @> :kid`, {kid: {kidId}})
-      .getOne();
-
-    const checkInData = lastLocationEvent.data as KidCheckedInEvent;
-
-    return {
-      eventName: EventType[lastLocationEvent.type],
-      kidId,
-      locationId: checkInData.locationId,
-    };
   }
 
   async findAll(): Promise<KidRO[]> {

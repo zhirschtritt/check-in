@@ -6,23 +6,34 @@ import {
   Param,
   UsePipes,
   ValidationPipe,
+  Inject,
 } from '@nestjs/common';
 import {CheckInKidDto, CreateKidDto} from './dto';
 import {KidsService} from './kids.service';
-import {KidRO, KidLocationRO} from './interfaces/kid.interface';
+import {KidRO} from './interfaces/kid.interface';
+import {KidLocation} from './interfaces/kid-projections.interface';
+import {KidsCqrsService} from './kids-cqrs.service';
 
 @Controller('kids')
 export class KidsController {
-  constructor(private readonly kidsService: KidsService) {}
+  constructor(
+    private readonly kidsCqrsService: KidsCqrsService,
+    private readonly kidsService: KidsService,
+  ) {}
 
   @Post(':id/checkIn')
   async checkIn(@Param('id') id: string, @Body() dto: CheckInKidDto) {
-    await this.kidsService.checkIn(id, dto);
+    await this.kidsCqrsService.checkIn(id, dto);
   }
 
   @Post(':id/checkOut')
   async checkOut(@Param('id') id: string): Promise<any> {
-    return await this.kidsService.checkOut(id);
+    return await this.kidsCqrsService.checkOut(id);
+  }
+
+  @Get(':id/location')
+  getCurrentLocation(@Param('id') id: string): Promise<KidLocation> {
+    return this.kidsCqrsService.getCurrentLocation(id);
   }
 
   @Get()
@@ -30,18 +41,13 @@ export class KidsController {
     return this.kidsService.findAll();
   }
 
-  @Get('kid/:id')
+  @Get(':id')
   findOne(@Param('id') id: string): Promise<KidRO> {
     return this.kidsService.findOne(id);
   }
 
-  @Get('kid/:id/location')
-  getCurrentLocation(@Param('id') id: string): Promise<KidLocationRO> {
-    return this.kidsService.getCurrentLocation(id);
-  }
-
   @UsePipes(new ValidationPipe())
-  @Post('kid')
+  @Post()
   async create(@Body() kidData: CreateKidDto): Promise<KidRO> {
     return this.kidsService.create(kidData);
   }

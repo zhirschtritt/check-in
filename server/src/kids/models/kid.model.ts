@@ -13,7 +13,6 @@ import {EventType} from '../interfaces/kid-event.interface';
 export class KidAggregateRoot extends AggregateRoot {
   constructor(
     private readonly kidEventFactory: KidEventFactory,
-    @Inject('inMemoryDb')
     private readonly projectionsDb: InMemoryDb,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,

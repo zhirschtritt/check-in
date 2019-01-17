@@ -15,7 +15,6 @@ export class CheckInHandler implements ICommandHandler<CheckInCommand> {
   private readonly logger: AppLogger;
   constructor(
     private readonly publisher: EventPublisher,
-    @Inject('KidAggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
     this.logger = LoggerFactory('CheckInHandler');

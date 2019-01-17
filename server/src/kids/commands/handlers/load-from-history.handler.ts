@@ -10,7 +10,6 @@ export class LoadFromHistoryHandler
   private readonly logger: AppLogger;
   constructor(
     private readonly publisher: EventPublisher,
-    @Inject('KidAggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
     this.logger = LoggerFactory('LoadFromHistoryHandler');
