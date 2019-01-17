@@ -30,10 +30,7 @@ export class KidCheckedOutHandler implements IEventHandler<KidCheckedOutEvent> {
           .first();
 
         if (currentLocation && currentLocation.locationId) {
-          this.kidLocationsProjection.update(currentLocation.id, {
-            locationId: '',
-            revision: currentLocation.revision += 1,
-          });
+          this.kidLocationsProjection.delete(currentLocation.id);
         }
 
         const updatedKidLocations = await this.kidLocationsProjection.toArray();
