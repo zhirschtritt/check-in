@@ -3,16 +3,25 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Injectable, Inject} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {KidEvent} from '../events/kid-event.entity';
-import {KidEventFactory} from '../events/kid-event.factory';
+import {EventFactory} from '../events/kid-event.factory';
 import {KidCheckedInEvent} from '../events/impl/kid-checked-in.event';
 import {KidCheckedOutEvent} from '../events/impl/kid-checked-out.event';
 import {InMemoryDb} from '../projections/in-memory-db';
 import {EventType} from '../interfaces/kid-event.interface';
 
+export interface KidAggregateRoot extends AggregateRoot {
+  checkIn(kidId: string, locationId: string): Promise<IEvent>;
+  checkOut(kidId: string): Promise<IEvent>;
+  loadFromHistory(rawHistory: KidEvent[]): void;
+}
+
 @Injectable()
-export class KidAggregateRoot extends AggregateRoot {
+export class KidAggregateRootImpl extends AggregateRoot
+  implements KidAggregateRoot {
   constructor(
-    private readonly kidEventFactory: KidEventFactory,
+    @Inject('EventFactory')
+    private readonly kidEventFactory: EventFactory,
+    @Inject('InMemoryDb')
     private readonly projectionsDb: InMemoryDb,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,

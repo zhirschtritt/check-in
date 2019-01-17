@@ -4,8 +4,12 @@ import {KidCheckedInEvent} from './impl/kid-checked-in.event';
 import {Injectable} from '@nestjs/common';
 import {KidCheckedOutEvent} from './impl/kid-checked-out.event';
 
+export interface EventFactory {
+  manufacture(eventType: EventType, data: any): IEvent;
+}
+
 @Injectable()
-export class KidEventFactory {
+export class KidEventFactory implements EventFactory {
   manufacture(eventType: EventType, data: any): IEvent {
     // TODO: define interface eventData
     switch (eventType) {

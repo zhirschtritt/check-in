@@ -1,20 +1,15 @@
-import {
-  EventPublisher,
-  ICommandHandler,
-  CommandHandler,
-  IEvent,
-  AggregateRoot,
-} from '@nestjs/cqrs';
+import {EventPublisher, ICommandHandler, CommandHandler} from '@nestjs/cqrs';
 import {CheckInCommand} from '../impl/check-in.command';
 import {KidAggregateRoot} from '../../models/kid.model';
-import {Inject} from '@nestjs/common';
 import {AppLogger, LoggerFactory} from 'src/common/logger';
+import {Inject} from '@nestjs/common';
 
 @CommandHandler(CheckInCommand)
 export class CheckInHandler implements ICommandHandler<CheckInCommand> {
   private readonly logger: AppLogger;
   constructor(
     private readonly publisher: EventPublisher,
+    @Inject('AggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
     this.logger = LoggerFactory('CheckInHandler');

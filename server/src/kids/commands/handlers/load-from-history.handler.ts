@@ -1,8 +1,8 @@
 import {EventPublisher, ICommandHandler, CommandHandler} from '@nestjs/cqrs';
 import {KidAggregateRoot} from '../../models/kid.model';
 import {LoadFromHistoryCommand} from '../impl/load-from-history.command';
-import {Inject} from '@nestjs/common';
 import {AppLogger, LoggerFactory} from 'src/common/logger';
+import {Inject} from '@nestjs/common';
 
 @CommandHandler(LoadFromHistoryCommand)
 export class LoadFromHistoryHandler
@@ -10,6 +10,7 @@ export class LoadFromHistoryHandler
   private readonly logger: AppLogger;
   constructor(
     private readonly publisher: EventPublisher,
+    @Inject('AggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
     this.logger = LoggerFactory('LoadFromHistoryHandler');

@@ -21,10 +21,18 @@ export const createPinoLogger = (
 };
 
 export function LoggerFactory(name: string): AppLogger {
-  return new AppLogger(name);
+  return new PinoLogger(name);
 }
 
-export class AppLogger implements LoggerService {
+export interface AppLogger {
+  log(ctx: any, msg: string);
+  info(ctx: any, msg: string);
+  debug(ctx: any, msg: string);
+  warn(ctx: any, msg: string);
+  error(ctx: any, msg: string);
+}
+
+export class PinoLogger implements LoggerService, AppLogger {
   private readonly pino: Pino;
   constructor(name: string) {
     this.pino = createPinoLogger(name);

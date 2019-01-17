@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Inject} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {CommandBus} from '@nestjs/cqrs';
@@ -15,6 +15,7 @@ import {InMemoryDb} from './projections/in-memory-db';
 export class KidsCqrsService {
   private readonly logger: AppLogger;
   constructor(
+    @Inject('InMemoryDb')
     private readonly inMemoryDb: InMemoryDb,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,

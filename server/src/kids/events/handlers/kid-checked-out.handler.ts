@@ -11,7 +11,7 @@ export class KidCheckedOutHandler implements IEventHandler<KidCheckedOutEvent> {
   private readonly logger: AppLogger;
   private readonly kidLocationsProjection: Dexie.Table<KidLocation, number>;
 
-  constructor(private readonly db: InMemoryDb) {
+  constructor(@Inject('InMemoryDb') private readonly db: InMemoryDb) {
     this.logger = LoggerFactory('KidCheckedOutHandler');
     this.kidLocationsProjection = db.kidLocations;
   }

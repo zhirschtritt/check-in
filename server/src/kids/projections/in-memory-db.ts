@@ -11,8 +11,11 @@ const {indexedDB, IDBKeyRange} = shim as any;
 Dexie.dependencies.indexedDB = indexedDB;
 Dexie.dependencies.IDBKeyRange = IDBKeyRange;
 
+export interface InMemoryDb extends Dexie {
+  kidLocations: Dexie.Table<KidLocation, number>;
+}
 @Injectable()
-export class InMemoryDb extends Dexie {
+export class DexieInMemoryDb extends Dexie implements InMemoryDb {
   kidLocations: Dexie.Table<KidLocation, number>;
 
   constructor() {
