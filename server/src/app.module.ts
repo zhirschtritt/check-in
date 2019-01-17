@@ -11,8 +11,9 @@ import {LocationsService} from './locations/locations.service';
 import {LocationsModule} from './locations/locations.module';
 import {KidsCqrsService} from './kids/kids-cqrs.service';
 import {DexieInMemoryDb} from './kids/projections/in-memory-db';
+import {LoggerModule, LogFactory} from './common/logger';
 @Module({
-  imports: [TypeOrmModule.forRoot(), KidsModule, LocationsModule],
+  imports: [TypeOrmModule.forRoot(), KidsModule, LocationsModule, LoggerModule],
   controllers: [AppController, LocationsController, KidsController],
   providers: [
     AppService,
@@ -20,6 +21,7 @@ import {DexieInMemoryDb} from './kids/projections/in-memory-db';
     KidsService,
     KidsCqrsService,
     {provide: 'InMemoryDb', useClass: DexieInMemoryDb},
+    {provide: 'LogFactory', useValue: LogFactory},
   ],
 })
 export class ApplicationModule {

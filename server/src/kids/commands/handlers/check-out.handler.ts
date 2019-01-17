@@ -1,18 +1,19 @@
 import {EventPublisher, ICommandHandler, CommandHandler} from '@nestjs/cqrs';
 import {KidAggregateRoot} from '../../models/kid.model';
 import {CheckOutCommand} from '../impl/check-out.command';
-import {LoggerFactory, AppLogger} from 'src/common/logger';
+import {LogFactory, AppLogger} from 'src/common/logger';
 import {Inject} from '@nestjs/common';
 
 @CommandHandler(CheckOutCommand)
 export class CheckOutHandler implements ICommandHandler<CheckOutCommand> {
   private readonly logger: AppLogger;
   constructor(
+    @Inject('LogFactory') logFactory: LogFactory,
     private readonly publisher: EventPublisher,
     @Inject('AggregateRoot')
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
-    this.logger = LoggerFactory('CheckOutHandler');
+    this.logger = logFactory('CheckOutHandler');
   }
 
   async execute(command: CheckOutCommand, resolve: (value?) => any) {

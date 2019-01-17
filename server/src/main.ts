@@ -1,11 +1,11 @@
 import {NestFactory} from '@nestjs/core';
 import {ApplicationModule} from './app.module';
 import {SwaggerModule, DocumentBuilder} from '@nestjs/swagger';
-import {AppLogger, LoggerFactory} from './common/logger';
+import {AppLogger, LogFactory} from './common/logger';
 
 async function bootstrap() {
   const app = await NestFactory.create(ApplicationModule, {
-    logger: LoggerFactory('Server'),
+    logger: LogFactory('Server'),
   });
 
   app.setGlobalPrefix('api');

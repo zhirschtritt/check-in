@@ -1,26 +1,17 @@
-import {Injectable, HttpException, HttpStatus} from '@nestjs/common';
+import {Injectable, HttpException, HttpStatus, Inject} from '@nestjs/common';
 import {Repository, DeleteResult} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
-import {CommandBus} from '@nestjs/cqrs';
 import {validate} from 'class-validator';
 import {Kid as KidEntity} from './kid.entity';
-import {KidEvent} from './events/kid-event.entity';
-import {CreateKidDto, CheckInKidDto} from './dto';
+import {CreateKidDto} from './dto';
 import {KidRO} from './interfaces/kid.interface';
-import {AppLogger, LoggerFactory} from 'src/common/logger';
 
 @Injectable()
 export class KidsService {
-  private readonly logger: AppLogger;
   constructor(
     @InjectRepository(KidEntity)
     private readonly kidRepository: Repository<KidEntity>,
-    @InjectRepository(KidEvent)
-    private readonly eventRepository: Repository<KidEvent>,
-    private readonly commandBus: CommandBus,
-  ) {
-    this.logger = LoggerFactory('KidsService');
-  }
+  ) {}
 
   async findAll(): Promise<KidRO[]> {
     const allKids = await this.kidRepository.find();

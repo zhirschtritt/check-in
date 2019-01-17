@@ -1,4 +1,4 @@
-import {Module, LoggerService} from '@nestjs/common';
+import {Module, LoggerService, Global} from '@nestjs/common';
 import {Logger as Pino, LoggerOptions} from 'pino';
 
 // tslint:disable-next-line:no-var-requires
@@ -20,7 +20,9 @@ export const createPinoLogger = (
   return pino(options);
 };
 
-export function LoggerFactory(name: string): AppLogger {
+export type LogFactory = (name) => AppLogger;
+
+export function LogFactory(name: string): AppLogger {
   return new PinoLogger(name);
 }
 
@@ -53,14 +55,19 @@ export class PinoLogger implements LoggerService, AppLogger {
     this.pino.info(ctx, msg);
   }
 }
-
+@Global()
 @Module({
   providers: [
     {
-      provide: 'LoggerFactory',
-      useValue: LoggerFactory,
+      provide: 'LogFactory',
+      useValue: LogFactory,
     },
   ],
-  exports: [LoggerFactory],
+  exports: [
+    {
+      provide: 'LogFactory',
+      useValue: LogFactory,
+    },
+  ],
 })
 export class LoggerModule {}

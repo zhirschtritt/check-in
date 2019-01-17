@@ -7,7 +7,7 @@ import {CheckInKidDto} from './dto';
 import {CheckInCommand} from './commands/impl/check-in.command';
 import {LoadFromHistoryCommand} from './commands/impl/load-from-history.command';
 import {CheckOutCommand} from './commands/impl/check-out.command';
-import {AppLogger, LoggerFactory} from 'src/common/logger';
+import {AppLogger, LogFactory} from 'src/common/logger';
 import {KidLocation} from './interfaces/kid-projections.interface';
 import {InMemoryDb} from './projections/in-memory-db';
 
@@ -15,13 +15,14 @@ import {InMemoryDb} from './projections/in-memory-db';
 export class KidsCqrsService {
   private readonly logger: AppLogger;
   constructor(
+    @Inject('LogFactory') logFactory: LogFactory,
     @Inject('InMemoryDb')
     private readonly inMemoryDb: InMemoryDb,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
     private readonly commandBus: CommandBus,
   ) {
-    this.logger = LoggerFactory('KidsCqrsService');
+    this.logger = logFactory('KidsCqrsService');
   }
 
   async checkIn(kidId: string, checkInKidDto: CheckInKidDto) {

@@ -3,7 +3,7 @@ import {Inject} from '@nestjs/common';
 import {IEventHandler, EventsHandler} from '@nestjs/cqrs';
 import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
 import {KidLocation} from '../../interfaces/kid-projections.interface';
-import {AppLogger, LoggerFactory} from 'src/common/logger';
+import {AppLogger, LogFactory} from 'src/common/logger';
 import {InMemoryDb} from 'src/kids/projections/in-memory-db';
 
 @EventsHandler(KidCheckedInEvent)
@@ -11,8 +11,11 @@ export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
   private readonly logger: AppLogger;
   private readonly kidLocationsProjection: Dexie.Table<KidLocation, number>;
 
-  constructor(@Inject('InMemoryDb') private readonly db: InMemoryDb) {
-    this.logger = LoggerFactory('KidCheckedInHandler');
+  constructor(
+    @Inject('LogFactory') logFactory: LogFactory,
+    @Inject('InMemoryDb') private readonly db: InMemoryDb,
+  ) {
+    this.logger = logFactory('KidCheckedInHandler');
     this.kidLocationsProjection = db.kidLocations;
   }
 
