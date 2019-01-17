@@ -48,19 +48,19 @@ export class KidAggregateRootImpl extends AggregateRoot
       .equals(kidId)
       .first();
 
-    if (kidLocation && kidLocation.locationId) {
-      const checkOutEvent = new KidCheckedOutEvent({kidId});
-      const kidEvent = await this.saveEvent(
-        checkOutEvent,
-        EventType.kidCheckedOutEvent,
-      );
-
-      this.apply(checkOutEvent);
-
-      return kidEvent;
+    if (!kidLocation || !kidLocation.locationId) {
+      throw new Error('Kid not currently checked in, cannot check out');
     }
 
-    throw new Error('Kid not currently checked in, cannot check out');
+    const checkOutEvent = new KidCheckedOutEvent({kidId});
+    const kidEvent = await this.saveEvent(
+      checkOutEvent,
+      EventType.kidCheckedOutEvent,
+    );
+
+    this.apply(checkOutEvent);
+
+    return kidEvent;
   }
 
   loadFromHistory(rawHistory: KidEvent[]) {
