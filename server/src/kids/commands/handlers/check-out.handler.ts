@@ -16,10 +16,10 @@ export class CheckOutHandler implements ICommandHandler<CheckOutCommand> {
     this.logger = logFactory('CheckOutHandler');
   }
 
-  async execute(command: CheckOutCommand, resolve: (value?) => any) {
-    this.logger.log({command}, 'Handling check-out command');
+  async execute(checkOutCommand: CheckOutCommand, resolve: (value?) => any) {
+    this.logger.log({checkOutCommand}, 'Handling check-out command');
 
-    const {kidId} = command;
+    const {kidId} = checkOutCommand;
     const kid = this.publisher.mergeObjectContext(this.kidAggregateRoot);
 
     try {

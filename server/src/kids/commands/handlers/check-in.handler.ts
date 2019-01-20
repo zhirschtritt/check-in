@@ -16,10 +16,10 @@ export class CheckInHandler implements ICommandHandler<CheckInCommand> {
     this.logger = logFactory('CheckInHandler');
   }
 
-  async execute(command: CheckInCommand, resolve: (value?) => void) {
-    this.logger.debug({command}, 'Handling check-in command');
+  async execute(checkInCommand: CheckInCommand, resolve: (value?) => void) {
+    this.logger.debug({checkInCommand}, 'Handling check-in command');
 
-    const {kidId, locationId} = command;
+    const {kidId, locationId} = checkInCommand;
     const kid = this.publisher.mergeObjectContext(this.kidAggregateRoot);
 
     try {

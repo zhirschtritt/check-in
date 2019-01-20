@@ -8,16 +8,18 @@ import {CheckInCommand} from './commands/impl/check-in.command';
 import {LoadFromHistoryCommand} from './commands/impl/load-from-history.command';
 import {CheckOutCommand} from './commands/impl/check-out.command';
 import {AppLogger, LogFactory} from 'src/common/logger';
-import {KidLocation} from './interfaces/kid-projections.interface';
-import {InMemoryDb} from './projections/in-memory-db';
+import {
+  KidLocation,
+  KidLocationProjection,
+} from './projections/kid-location.projection';
 
 @Injectable()
 export class KidsCqrsService {
   private readonly logger: AppLogger;
   constructor(
     @Inject('LogFactory') logFactory: LogFactory,
-    @Inject('InMemoryDb')
-    private readonly inMemoryDb: InMemoryDb,
+    @Inject('KidLocations')
+    private readonly kidLocationProj: KidLocationProjection,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
     private readonly commandBus: CommandBus,
@@ -54,15 +56,7 @@ export class KidsCqrsService {
     return this.commandBus.execute(command);
   }
 
-  async getCurrentLocation(kidId: string): Promise<KidLocation> {
-    const kidLocation = await this.inMemoryDb.kidLocations
-      .where('kidId')
-      .equals(kidId)
-      .first();
-
-    return {
-      kidId: kidLocation.kidId,
-      locationId: kidLocation.locationId,
-    };
+  async kidLocationsFindAll(): Promise<KidLocation[]> {
+    return await this.kidLocationProj.findAll();
   }
 }

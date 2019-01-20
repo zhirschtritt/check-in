@@ -3,7 +3,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
-import {KidsModule} from './kids/kids.module';
+import {KidsModule, ProjectionProviders} from './kids/kids.module';
 import {KidsService} from './kids/kids.service';
 import {KidsController} from './kids/kids.controller';
 import {LocationsController} from './locations/locations.controller';
@@ -22,6 +22,7 @@ import {LoggerModule, LogFactory} from './common/logger';
     KidsCqrsService,
     {provide: 'InMemoryDb', useClass: DexieInMemoryDb},
     {provide: 'LogFactory', useValue: LogFactory},
+    ...ProjectionProviders,
   ],
 })
 export class ApplicationModule {

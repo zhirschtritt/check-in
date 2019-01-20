@@ -12,6 +12,14 @@ import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRootImpl} from './models/kid.model';
 import {InMemoryDb, DexieInMemoryDb} from './projections/in-memory-db';
 import {KidsCqrsService} from './kids-cqrs.service';
+import {KidLocationProjectionImpl} from './projections/kid-location.projection';
+
+export const ProjectionProviders = [
+  {
+    provide: 'KidLocations',
+    useClass: KidLocationProjectionImpl,
+  },
+];
 
 @Module({
   imports: [
@@ -28,6 +36,7 @@ import {KidsCqrsService} from './kids-cqrs.service';
     KidsService,
     ...EventHandlers,
     ...CommandHandlers,
+    ...ProjectionProviders,
   ],
 })
 export class KidsModule implements OnModuleInit {

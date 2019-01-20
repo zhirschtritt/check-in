@@ -6,8 +6,8 @@ import {KidEvent} from '../events/kid-event.entity';
 import {EventFactory} from '../events/kid-event.factory';
 import {KidCheckedInEvent} from '../events/impl/kid-checked-in.event';
 import {KidCheckedOutEvent} from '../events/impl/kid-checked-out.event';
-import {InMemoryDb} from '../projections/in-memory-db';
 import {EventType} from '../interfaces/kid-event.interface';
+import {KidLocationProjection} from '../projections/kid-location.projection';
 
 export interface KidAggregateRoot extends AggregateRoot {
   checkIn(kidId: string, locationId: string): Promise<IEvent>;
@@ -21,8 +21,8 @@ export class KidAggregateRootImpl extends AggregateRoot
   constructor(
     @Inject('EventFactory')
     private readonly kidEventFactory: EventFactory,
-    @Inject('InMemoryDb')
-    private readonly projectionsDb: InMemoryDb,
+    @Inject('KidLocations')
+    private readonly kidLocationsProj: KidLocationProjection,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
   ) {
@@ -43,12 +43,9 @@ export class KidAggregateRootImpl extends AggregateRoot
   }
 
   async checkOut(kidId: string): Promise<IEvent> {
-    const kidLocation = await this.projectionsDb.kidLocations
-      .where('kidId')
-      .equals(kidId)
-      .first();
+    const kidLocation = await this.kidLocationsProj.findOne(kidId);
 
-    if (!kidLocation || !kidLocation.locationId) {
+    if (!kidLocation) {
       throw new Error('Kid not currently checked in, cannot check out');
     }
 

@@ -2,7 +2,7 @@
 const setGlobalVars = require('indexeddbshim');
 import Dexie from 'dexie';
 import {Injectable} from '@nestjs/common';
-import {KidLocation} from '../interfaces/kid-projections.interface';
+import {KidLocation} from './kid-location.projection';
 
 const shim = {};
 setGlobalVars(shim, {checkOrigin: false});
@@ -23,7 +23,7 @@ export class DexieInMemoryDb extends Dexie implements InMemoryDb {
     const db = this;
 
     db.version(1).stores({
-      kidLocations: '++id, locationId, kidId',
+      kidLocations: '++id, kidId, locationId',
     });
   }
 }
