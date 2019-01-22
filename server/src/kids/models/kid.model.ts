@@ -8,6 +8,7 @@ import {KidCheckedInEvent} from '../events/impl/kid-checked-in.event';
 import {KidCheckedOutEvent} from '../events/impl/kid-checked-out.event';
 import {EventType} from '../interfaces/kid-event.interface';
 import {KidLocationProjection} from '../projections/kid-location.projection';
+import {di_keys} from '../../common/di-keys';
 
 export interface KidAggregateRoot extends AggregateRoot {
   checkIn(kidId: string, locationId: string): Promise<IEvent>;
@@ -19,9 +20,9 @@ export interface KidAggregateRoot extends AggregateRoot {
 export class KidAggregateRootImpl extends AggregateRoot
   implements KidAggregateRoot {
   constructor(
-    @Inject('EventFactory')
+    @Inject(di_keys.EventFactory)
     private readonly kidEventFactory: EventFactory,
-    @Inject('KidLocations')
+    @Inject(di_keys.KidLocationsProj)
     private readonly kidLocationsProj: KidLocationProjection,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,

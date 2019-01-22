@@ -6,15 +6,23 @@ import {
   KidLocationProjection,
 } from '../../projections/kid-location.projection';
 import {AppLogger, LogFactory} from '../../../common/logger';
+import {
+  KidHistoryDayProjection,
+  KidHistoryEvent,
+} from '../../projections/kid-history-day.projection';
+import {EventType} from '../../interfaces/kid-event.interface';
+import {di_keys} from '../../../common/di-keys';
 
 @EventsHandler(KidCheckedInEvent)
 export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
   private readonly logger: AppLogger;
 
   constructor(
-    @Inject('LogFactory') logFactory: LogFactory,
-    @Inject('KidLocations')
+    @Inject(di_keys.LogFactory) logFactory: LogFactory,
+    @Inject(di_keys.KidLocationsProj)
     private readonly kidLocationsProj: KidLocationProjection,
+    @Inject(di_keys.KidHistoryDayProj)
+    private readonly kidHistoryDayProj: KidHistoryDayProjection,
   ) {
     this.logger = logFactory('KidCheckedInHandler');
   }
@@ -26,8 +34,16 @@ export class KidCheckedInHandler implements IEventHandler<KidCheckedInEvent> {
       revision: 0,
     };
 
+    const newKidHistoryEvent: KidHistoryEvent = {
+      eventType: EventType.kidCheckedInEvent,
+      locationId: event.locationId,
+    };
+
     try {
-      await this.kidLocationsProj.upsert(newKidLocation);
+      await Promise.all([
+        this.kidLocationsProj.upsert(newKidLocation),
+        this.kidHistoryDayProj.appendEvent(event.kidId, newKidHistoryEvent),
+      ]);
     } catch (err) {
       this.logger.error({err}, 'Error updating projection');
       throw new Error('Error updating projection');

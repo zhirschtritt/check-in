@@ -2,6 +2,7 @@ import {InMemoryDb} from './in-memory-db';
 import Dexie from 'dexie';
 import {Inject} from '@nestjs/common';
 import {LogFactory, AppLogger} from '../../common/logger';
+import {di_keys} from '../../common/di-keys';
 
 export interface KidLocation {
   id?: number;
@@ -18,12 +19,12 @@ export interface KidLocationProjection {
   findOne(kidId: string): Promise<KidLocation>;
 }
 
-export class KidLocationProjectionImpl implements KidLocationProjection {
+export class KidLocationProjectionAdapter implements KidLocationProjection {
   private readonly kidLocationsTable: Dexie.Table<KidLocation, number>;
   private readonly logger: AppLogger;
   constructor(
-    @Inject('LogFactory') logFactory: LogFactory,
-    @Inject('InMemoryDb') private readonly inMemoryDb: InMemoryDb,
+    @Inject(di_keys.LogFactory) logFactory: LogFactory,
+    @Inject(di_keys.InMemoryDb) private readonly inMemoryDb: InMemoryDb,
   ) {
     this.kidLocationsTable = inMemoryDb.kidLocations;
     this.logger = logFactory('KidLocationProjection');

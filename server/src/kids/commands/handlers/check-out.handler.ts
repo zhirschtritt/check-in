@@ -3,14 +3,15 @@ import {KidAggregateRoot} from '../../models/kid.model';
 import {CheckOutCommand} from '../impl/check-out.command';
 import {LogFactory, AppLogger} from 'src/common/logger';
 import {Inject} from '@nestjs/common';
+import {di_keys} from '../../../common/di-keys';
 
 @CommandHandler(CheckOutCommand)
 export class CheckOutHandler implements ICommandHandler<CheckOutCommand> {
   private readonly logger: AppLogger;
   constructor(
-    @Inject('LogFactory') logFactory: LogFactory,
+    @Inject(di_keys.LogFactory) logFactory: LogFactory,
     private readonly publisher: EventPublisher,
-    @Inject('AggregateRoot')
+    @Inject(di_keys.AggregateRoot)
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
     this.logger = logFactory('CheckOutHandler');

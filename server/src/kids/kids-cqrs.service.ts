@@ -12,14 +12,21 @@ import {
   KidLocation,
   KidLocationProjection,
 } from './projections/kid-location.projection';
+import {
+  KidHistoryDayProjection,
+  KidHistoryDay,
+} from './projections/kid-history-day.projection';
+import {di_keys} from '../common/di-keys';
 
 @Injectable()
 export class KidsCqrsService {
   private readonly logger: AppLogger;
   constructor(
-    @Inject('LogFactory') logFactory: LogFactory,
-    @Inject('KidLocations')
+    @Inject(di_keys.LogFactory) logFactory: LogFactory,
+    @Inject(di_keys.KidLocationsProj)
     private readonly kidLocationProj: KidLocationProjection,
+    @Inject(di_keys.KidHistoryDayProj)
+    private readonly kidHistoryDayProj: KidHistoryDayProjection,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
     private readonly commandBus: CommandBus,
@@ -58,5 +65,9 @@ export class KidsCqrsService {
 
   async kidLocationsFindAll(): Promise<KidLocation[]> {
     return await this.kidLocationProj.findAll();
+  }
+
+  async kidDailyHistoriesFindAll(): Promise<KidHistoryDay[]> {
+    return await this.kidHistoryDayProj.findAll();
   }
 }

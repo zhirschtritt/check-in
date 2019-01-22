@@ -3,15 +3,16 @@ import {KidAggregateRoot} from '../../models/kid.model';
 import {LoadFromHistoryCommand} from '../impl/load-from-history.command';
 import {AppLogger, LogFactory} from 'src/common/logger';
 import {Inject} from '@nestjs/common';
+import {di_keys} from '../../../common/di-keys';
 
 @CommandHandler(LoadFromHistoryCommand)
 export class LoadFromHistoryHandler
   implements ICommandHandler<LoadFromHistoryCommand> {
   private readonly logger: AppLogger;
   constructor(
-    @Inject('LogFactory') logFactory: LogFactory,
+    @Inject(di_keys.LogFactory) logFactory: LogFactory,
     private readonly publisher: EventPublisher,
-    @Inject('AggregateRoot')
+    @Inject(di_keys.AggregateRoot)
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
     this.logger = logFactory('LoadFromHistoryHandler');

@@ -12,6 +12,7 @@ import {KidsService} from './kids.service';
 import {KidRO} from './interfaces/kid.interface';
 import {KidLocation} from './projections/kid-location.projection';
 import {KidsCqrsService} from './kids-cqrs.service';
+import {KidHistoryDay} from './projections/kid-history-day.projection';
 
 @Controller('kids')
 export class KidsController {
@@ -30,9 +31,14 @@ export class KidsController {
     return this.kidsCqrsService.checkOut(id);
   }
 
-  @Get('kidLocations')
+  @Get('location')
   currentKidLocations(): Promise<KidLocation[]> {
     return this.kidsCqrsService.kidLocationsFindAll();
+  }
+
+  @Get('history.day')
+  kidDailyHistories(): Promise<KidHistoryDay[]> {
+    return this.kidsCqrsService.kidDailyHistoriesFindAll();
   }
 
   @Get()

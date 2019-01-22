@@ -12,12 +12,18 @@ import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRootImpl} from './models/kid.model';
 import {InMemoryDb, DexieInMemoryDb} from './projections/in-memory-db';
 import {KidsCqrsService} from './kids-cqrs.service';
-import {KidLocationProjectionImpl} from './projections/kid-location.projection';
+import {KidLocationProjectionAdapter} from './projections/kid-location.projection';
+import {KidHistoryDayProjectionAdapter} from './projections/kid-history-day.projection';
+import {di_keys} from '../common/di-keys';
 
 export const ProjectionProviders = [
   {
-    provide: 'KidLocations',
-    useClass: KidLocationProjectionImpl,
+    provide: di_keys.KidLocationsProj,
+    useClass: KidLocationProjectionAdapter,
+  },
+  {
+    provide: di_keys.KidHistoryDayProj,
+    useClass: KidHistoryDayProjectionAdapter,
   },
 ];
 
@@ -29,9 +35,9 @@ export const ProjectionProviders = [
   ],
   controllers: [KidsController],
   providers: [
-    {provide: 'InMemoryDb', useClass: DexieInMemoryDb},
-    {provide: 'AggregateRoot', useClass: KidAggregateRootImpl},
-    {provide: 'EventFactory', useClass: KidEventFactory},
+    {provide: di_keys.InMemoryDb, useClass: DexieInMemoryDb},
+    {provide: di_keys.AggregateRoot, useClass: KidAggregateRootImpl},
+    {provide: di_keys.EventFactory, useClass: KidEventFactory},
     KidsCqrsService,
     KidsService,
     ...EventHandlers,
@@ -45,7 +51,7 @@ export class KidsModule implements OnModuleInit {
     private readonly command$: CommandBus,
     private readonly event$: EventBus,
     private readonly kidsCqrsService: KidsCqrsService,
-    @Inject('InMemoryDb')
+    @Inject(di_keys.InMemoryDb)
     private readonly inMemoryDb: InMemoryDb,
   ) {}
 

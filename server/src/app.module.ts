@@ -12,6 +12,7 @@ import {LocationsModule} from './locations/locations.module';
 import {KidsCqrsService} from './kids/kids-cqrs.service';
 import {DexieInMemoryDb} from './kids/projections/in-memory-db';
 import {LoggerModule, LogFactory} from './common/logger';
+import {di_keys} from './common/di-keys';
 @Module({
   imports: [TypeOrmModule.forRoot(), KidsModule, LocationsModule, LoggerModule],
   controllers: [AppController, LocationsController, KidsController],
@@ -20,8 +21,8 @@ import {LoggerModule, LogFactory} from './common/logger';
     LocationsService,
     KidsService,
     KidsCqrsService,
-    {provide: 'InMemoryDb', useClass: DexieInMemoryDb},
-    {provide: 'LogFactory', useValue: LogFactory},
+    {provide: di_keys.InMemoryDb, useClass: DexieInMemoryDb},
+    {provide: di_keys.LogFactory, useValue: LogFactory},
     ...ProjectionProviders,
   ],
 })

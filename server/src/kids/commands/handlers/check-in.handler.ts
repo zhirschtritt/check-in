@@ -3,14 +3,15 @@ import {CheckInCommand} from '../impl/check-in.command';
 import {KidAggregateRoot} from '../../models/kid.model';
 import {AppLogger, LogFactory} from 'src/common/logger';
 import {Inject} from '@nestjs/common';
+import {di_keys} from '../../../common/di-keys';
 
 @CommandHandler(CheckInCommand)
 export class CheckInHandler implements ICommandHandler<CheckInCommand> {
   private readonly logger: AppLogger;
   constructor(
-    @Inject('LogFactory') logFactory: LogFactory,
+    @Inject(di_keys.LogFactory) logFactory: LogFactory,
     private readonly publisher: EventPublisher,
-    @Inject('AggregateRoot')
+    @Inject(di_keys.AggregateRoot)
     private readonly kidAggregateRoot: KidAggregateRoot,
   ) {
     this.logger = logFactory('CheckInHandler');

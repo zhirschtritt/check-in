@@ -1,5 +1,6 @@
 import {Module, LoggerService, Global} from '@nestjs/common';
 import {Logger as Pino, LoggerOptions} from 'pino';
+import {di_keys} from './di-keys';
 
 // tslint:disable-next-line:no-var-requires
 const pino = require('pino');
@@ -59,13 +60,13 @@ export class PinoLogger implements LoggerService, AppLogger {
 @Module({
   providers: [
     {
-      provide: 'LogFactory',
+      provide: di_keys.LogFactory,
       useValue: LogFactory,
     },
   ],
   exports: [
     {
-      provide: 'LogFactory',
+      provide: di_keys.LogFactory,
       useValue: LogFactory,
     },
   ],
