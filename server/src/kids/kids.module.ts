@@ -12,18 +12,18 @@ import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRootImpl} from './models/kid.model';
 import {InMemoryDb, DexieInMemoryDb} from './projections/in-memory-db';
 import {KidsCqrsService} from './kids-cqrs.service';
-import {KidLocationProjectionAdapter} from './projections/kid-location.projection';
-import {KidHistoryDayProjectionAdapter} from './projections/kid-history-day.projection';
+import {KidLocationProjectionImpl} from './projections/kid-location.projection';
+import {KidHistoryDayProjectionImpl} from './projections/kid-history-day.projection';
 import {di_keys} from '../common/di-keys';
 
 export const ProjectionProviders = [
   {
     provide: di_keys.KidLocationsProj,
-    useClass: KidLocationProjectionAdapter,
+    useClass: KidLocationProjectionImpl,
   },
   {
     provide: di_keys.KidHistoryDayProj,
-    useClass: KidHistoryDayProjectionAdapter,
+    useClass: KidHistoryDayProjectionImpl,
   },
 ];
 

@@ -19,7 +19,7 @@ export interface KidLocationProjection {
   findOne(kidId: string): Promise<KidLocation>;
 }
 
-export class KidLocationProjectionAdapter implements KidLocationProjection {
+export class KidLocationProjectionImpl implements KidLocationProjection {
   private readonly kidLocationsTable: Dexie.Table<KidLocation, number>;
   private readonly logger: AppLogger;
   constructor(

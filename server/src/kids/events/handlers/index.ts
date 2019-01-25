@@ -1,4 +1,7 @@
-import {KidCheckedInHandler} from './kid-checked-in.handler';
-import {KidCheckedOutHandler} from './kid-checked-out.handler';
+import {KidHistoryDayProjectionEventHandler} from './kid-history-day.projection.handler';
+import {KidLocationProjectionEventHandler} from './kid-location.projection.handler';
 
-export const EventHandlers = [KidCheckedInHandler, KidCheckedOutHandler];
+export const EventHandlers = [
+  KidHistoryDayProjectionEventHandler,
+  KidLocationProjectionEventHandler,
+];

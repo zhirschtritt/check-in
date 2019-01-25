@@ -24,7 +24,7 @@ export interface KidHistoryDayProjection {
   findOne(kidId: string): Promise<KidHistoryDay>;
 }
 
-export class KidHistoryDayProjectionAdapter implements KidHistoryDayProjection {
+export class KidHistoryDayProjectionImpl implements KidHistoryDayProjection {
   private readonly kidHistoryDayTable: Dexie.Table<KidHistoryDay, number>;
   private readonly logger: AppLogger;
   constructor(
