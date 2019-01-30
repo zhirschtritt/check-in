@@ -6,7 +6,6 @@ export interface KidRO {
   firstName: string;
   lastName: string;
   dob: Date;
-  currentLocation?: Location;
 }
 
 export interface KidLocationRO {
