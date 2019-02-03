@@ -1,20 +1,17 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <!-- <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/> -->
-    <v-btn @click="onClick()">INCREMENT</v-btn>
+  <div>🐩
+    <KidsByLocationTables/>
   </div>
 </template>
 
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
+import KidsByLocationTables from '../components/kids-by-location-tables.vue';
 
-@Component({})
-export default class Home extends Vue {
-  message: string = 'fuck';
-
-  onClick() {
-    console.log(this.message);
-  }
-}
+@Component({
+  components: {
+    KidsByLocationTables,
+  },
+})
+export default class Home extends Vue {}
 </script>

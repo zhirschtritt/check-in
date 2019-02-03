@@ -1,10 +1,10 @@
-import {Injectable, HttpException, HttpStatus, Inject} from '@nestjs/common';
+import {Injectable, HttpException, HttpStatus} from '@nestjs/common';
 import {Repository, DeleteResult} from 'typeorm';
 import {InjectRepository} from '@nestjs/typeorm';
 import {validate} from 'class-validator';
 import {Kid as KidEntity} from './kid.entity';
+import {KidRO} from '@core';
 import {CreateKidDto} from './dto';
-import {KidRO} from './interfaces/kid.interface';
 
 @Injectable()
 export class KidsService {
@@ -23,10 +23,7 @@ export class KidsService {
       const kidEntity = await this.kidRepository.findOne({id});
       return this.kidEntityToResponseObject(kidEntity);
     } catch (error) {
-      throw new HttpException(
-        {message: 'Entiy not found', errors: [error]},
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException({message: 'Entiy not found', errors: [error]}, HttpStatus.NOT_FOUND);
     }
   }
 

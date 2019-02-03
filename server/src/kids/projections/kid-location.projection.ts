@@ -3,13 +3,7 @@ import Dexie from 'dexie';
 import {Inject} from '@nestjs/common';
 import {LogFactory, AppLogger} from '../../common/logger';
 import {di_keys} from '../../common/di-keys';
-
-export interface KidLocation {
-  id?: number;
-  kidId: string;
-  locationId: string;
-  revision?: number;
-}
+import {KidLocation} from '@core';
 
 export interface KidLocationProjection {
   upsert(newKidLocation: KidLocation): Promise<number>;
@@ -31,42 +25,34 @@ export class KidLocationProjectionImpl implements KidLocationProjection {
   }
 
   async upsert(newKidLocation: KidLocation) {
-    return this.inMemoryDb.transaction(
-      'rw',
-      this.kidLocationsTable,
-      async () => {
-        const currentLocation = await this.kidLocationsTable
-          .where('kidId')
-          .equals(newKidLocation.kidId)
-          .first();
+    return this.inMemoryDb.transaction('rw', this.kidLocationsTable, async () => {
+      const currentLocation = await this.kidLocationsTable
+        .where('kidId')
+        .equals(newKidLocation.kidId)
+        .first();
 
-        if (currentLocation) {
-          return await this.kidLocationsTable.update(currentLocation.id, {
-            locationId: newKidLocation.locationId,
-            revision: currentLocation.revision += 1,
-          });
-        } else {
-          return await this.kidLocationsTable.add(newKidLocation);
-        }
-      },
-    );
+      if (currentLocation) {
+        return await this.kidLocationsTable.update(currentLocation.id, {
+          locationId: newKidLocation.locationId,
+          revision: currentLocation.revision += 1,
+        });
+      } else {
+        return await this.kidLocationsTable.add(newKidLocation);
+      }
+    });
   }
 
   async delete(kidId: string) {
-    return this.inMemoryDb.transaction(
-      'rw',
-      this.kidLocationsTable,
-      async () => {
-        const kidLocation = await this.kidLocationsTable
-          .where('kidId')
-          .equals(kidId)
-          .first();
+    return this.inMemoryDb.transaction('rw', this.kidLocationsTable, async () => {
+      const kidLocation = await this.kidLocationsTable
+        .where('kidId')
+        .equals(kidId)
+        .first();
 
-        if (kidLocation) {
-          return await this.kidLocationsTable.delete(kidLocation.id);
-        }
-      },
-    );
+      if (kidLocation) {
+        return await this.kidLocationsTable.delete(kidLocation.id);
+      }
+    });
   }
 
   async findAll() {

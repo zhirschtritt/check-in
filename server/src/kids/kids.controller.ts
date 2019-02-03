@@ -1,18 +1,8 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Body,
-  Param,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import {CheckInKidDto, CreateKidDto} from './dto';
+import {Controller, Post, Get, Body, Param, UsePipes, ValidationPipe} from '@nestjs/common';
 import {KidsService} from './kids.service';
-import {KidRO} from './interfaces/kid.interface';
-import {KidLocation} from './projections/kid-location.projection';
+import {KidRO, KidLocation, KidHistoryDay} from '@core';
 import {KidsCqrsService} from './kids-cqrs.service';
-import {KidHistoryDay} from './projections/kid-history-day.projection';
+import {CheckInKidDto, CreateKidDto} from './dto';
 
 @Controller('kids')
 export class KidsController {

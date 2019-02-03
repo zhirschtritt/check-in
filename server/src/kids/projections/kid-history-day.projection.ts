@@ -2,20 +2,8 @@ import {InMemoryDb} from './in-memory-db';
 import Dexie from 'dexie';
 import {Inject} from '@nestjs/common';
 import {LogFactory, AppLogger} from '../../common/logger';
-import {EventType} from '../interfaces/kid-event.interface';
+import {KidHistoryEvent, KidHistoryDay} from '@core';
 import {di_keys} from '../../common/di-keys';
-
-export interface KidHistoryDay {
-  id?: number;
-  kidId: string;
-  history: KidHistoryEvent[];
-}
-
-export interface KidHistoryEvent {
-  eventType: EventType;
-  timestamp?: Date;
-  locationId?: string;
-}
 
 export interface KidHistoryDayProjection {
   appendEvent(kidId: string, event: KidHistoryEvent): Promise<number>;
@@ -36,30 +24,26 @@ export class KidHistoryDayProjectionImpl implements KidHistoryDayProjection {
   }
 
   async appendEvent(kidId: string, incomingEvent: KidHistoryEvent) {
-    return this.inMemoryDb.transaction(
-      'rw',
-      this.kidHistoryDayTable,
-      async () => {
-        const kidHistory = await this.kidHistoryDayTable
-          .where('kidId')
-          .equals(kidId)
-          .first();
+    return this.inMemoryDb.transaction('rw', this.kidHistoryDayTable, async () => {
+      const kidHistory = await this.kidHistoryDayTable
+        .where('kidId')
+        .equals(kidId)
+        .first();
 
-        incomingEvent.timestamp = new Date();
+      incomingEvent.timestamp = new Date();
 
-        if (kidHistory) {
-          kidHistory.history.push(incomingEvent);
-          return await this.kidHistoryDayTable.update(kidHistory.id, {
-            history: kidHistory.history,
-          });
-        } else {
-          return await this.kidHistoryDayTable.add({
-            kidId,
-            history: [incomingEvent],
-          });
-        }
-      },
-    );
+      if (kidHistory) {
+        kidHistory.history.push(incomingEvent);
+        return await this.kidHistoryDayTable.update(kidHistory.id, {
+          history: kidHistory.history,
+        });
+      } else {
+        return await this.kidHistoryDayTable.add({
+          kidId,
+          history: [incomingEvent],
+        });
+      }
+    });
   }
 
   async findAll() {
@@ -76,9 +60,6 @@ export class KidHistoryDayProjectionImpl implements KidHistoryDayProjection {
   async debug() {
     const kidHistoryDayProjection = await this.kidHistoryDayTable.toArray();
 
-    this.logger.debug(
-      {kidHistoryDayProjection},
-      'Updating kidLocation aggregate',
-    );
+    this.logger.debug({kidHistoryDayProjection}, 'Updating kidLocation aggregate');
   }
 }

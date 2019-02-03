@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "declaration": true,
+    "noImplicitAny": false,
+    "allowSyntheticDefaultImports": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "esnext",
+    "sourceMap": true,
+    "composite": true
+  },
+  "references": [
+    {
+      "path": "./core"
+    },
+    {
+      "path": "./server"
+    },
+    {
+      "path": "./client"
+    }
+  ]
+}

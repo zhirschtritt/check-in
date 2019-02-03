@@ -1,5 +1,7 @@
 {
+  "extends": "../tsproject.json",
   "compilerOptions": {
+    "composite": true,
     "module": "commonjs",
     "declaration": true,
     "noImplicitAny": false,
@@ -11,13 +13,16 @@
     "target": "es6",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "paths": {
+      "@core": ["../core"]
+    }
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"],
+  "references": [
+    {
+      "path": "../core"
+    }
   ]
 }
