@@ -1,7 +1,7 @@
 <template>
   <v-container fluid grid-list-md>
     <v-data-iterator
-      :items="kidsByLocation"
+      :items="kidsByLoc"
       content-tag="v-layout"
       item-key="locationId"
       hide-actions
@@ -16,8 +16,11 @@
           <v-divider></v-divider>
           <v-list dense :key="kid" v-for="kid in props.item.kids">
             <v-list-tile>
-              <v-list-tile-content>{{ kid }}</v-list-tile-content>
-              <v-list-tile-content class="align-end">STUFF</v-list-tile-content>
+              <v-icon>face</v-icon>
+              <v-list-tile-content class="pl-1">{{ kid }}</v-list-tile-content>
+              <v-list-tile-content class="align-end">
+                <v-icon>more_vert</v-icon>
+              </v-list-tile-content>
             </v-list-tile>
           </v-list>
         </v-card>
@@ -29,23 +32,13 @@
 <script lang="ts">
 import {Component, Vue} from 'vue-property-decorator';
 import {namespace, Getter} from 'vuex-class';
-import * as R from 'ramda';
 import {KidLocation} from '../../../core/dist';
+import {KidsByLocation} from '../store/projections';
 
-const projections = namespace('/projections');
+const projections = namespace('projections');
 
 @Component
 export default class KidsByLocationTables extends Vue {
-  // @projections.Getter('kidLocations') private kidLocations: KidLocation[] = [];
-
-  get kidsByLocation() {
-    return [
-      {locationId: 'oppppop', kids: ['you', 'sue', 'bob']},
-      {locationId: 'sdflsdf', kids: ['yodu', 'suefd', 'bob']},
-      {locationId: 'hahha', kids: ['ydfdou', 'ssdfdue', 'sdfsdf']},
-    ];
-    // const sortByLoc = R.groupBy((k: KidLocation) => k.locationId);
-    // return sortByLoc(this.kidLocations);
-  }
+  @projections.Getter('kidsByLocation') kidsByLoc: KidsByLocation;
 }
 </script>

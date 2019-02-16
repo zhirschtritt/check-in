@@ -1,5 +1,12 @@
 module.exports = {
   root: true,
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.ts', '.tsx', '.vue'],
+      },
+    },
+  },
   env: {
     node: true,
   },
