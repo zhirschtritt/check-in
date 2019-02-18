@@ -1,10 +1,8 @@
 import {Inject} from '@nestjs/common';
 import {IEventHandler, EventsHandler} from '@nestjs/cqrs';
 import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
-import {
-  KidLocation,
-  KidLocationProjection,
-} from '../../projections/kid-location.projection';
+import {KidLocationProjection} from '../../projections/kid-location.projection';
+import {KidLocation} from '@core';
 import {di_keys} from '../../../common/di-keys';
 import {KidCheckedOutEvent} from '../impl/kid-checked-out.event';
 

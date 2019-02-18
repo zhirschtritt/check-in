@@ -8,15 +8,10 @@ import {CheckInCommand} from './commands/impl/check-in.command';
 import {LoadFromHistoryCommand} from './commands/impl/load-from-history.command';
 import {CheckOutCommand} from './commands/impl/check-out.command';
 import {AppLogger, LogFactory} from 'src/common/logger';
-import {
-  KidLocation,
-  KidLocationProjection,
-} from './projections/kid-location.projection';
-import {
-  KidHistoryDayProjection,
-  KidHistoryDay,
-} from './projections/kid-history-day.projection';
+import {KidLocationProjection} from './projections/kid-location.projection';
+import {KidHistoryDayProjection} from './projections/kid-history-day.projection';
 import {di_keys} from '../common/di-keys';
+import {KidLocation, KidHistoryDay} from '@core';
 
 @Injectable()
 export class KidsCqrsService {
