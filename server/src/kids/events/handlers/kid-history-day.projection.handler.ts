@@ -4,7 +4,7 @@ import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
 import {di_keys} from '../../../common/di-keys';
 import {KidCheckedOutEvent} from '../impl/kid-checked-out.event';
 import {KidHistoryDayProjection} from '../../projections';
-import {EventType} from '../../interfaces/kid-event.interface';
+import {EventType} from '@core';
 
 @EventsHandler(KidCheckedInEvent, KidCheckedOutEvent)
 export class KidHistoryDayProjectionEventHandler
@@ -21,10 +21,7 @@ export class KidHistoryDayProjectionEventHandler
         locationId: event.locationId,
       };
 
-      return await this.kidHistoryDayProj.appendEvent(
-        event.kidId,
-        newKidHistoryEvent,
-      );
+      return await this.kidHistoryDayProj.appendEvent(event.kidId, newKidHistoryEvent);
     }
 
     if (event instanceof KidCheckedOutEvent) {
@@ -32,10 +29,7 @@ export class KidHistoryDayProjectionEventHandler
         eventType: EventType.kidCheckedOutEvent,
       };
 
-      return await this.kidHistoryDayProj.appendEvent(
-        event.kidId,
-        newKidHistoryEvent,
-      );
+      return await this.kidHistoryDayProj.appendEvent(event.kidId, newKidHistoryEvent);
     }
 
     throw new Error('Cannot handle unknown event type');
