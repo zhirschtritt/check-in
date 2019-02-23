@@ -10,6 +10,7 @@ export interface Repository<T> {
   findOne(id: string): Promise<T | null>;
   findAll(): Promise<T[] | null>;
   update(id: string, obj: Partial<T>): Promise<T>;
+  upsert(obj: T, id?: string): Promise<T>;
   delete(id: string): Promise<void>;
 }
 
@@ -75,18 +76,26 @@ export abstract class FirestoreRepository<T extends FirestoreDocument> implement
 
   public async update(id: string, obj: Partial<T>): Promise<T> {
     try {
-      const updatedDoc = await this.firestoreClient.runTransaction(async t => {
-        const docRef = this.collection.doc(id);
-        obj.updatedAt = firestore.FieldValue.serverTimestamp();
-        await t.update(docRef, obj);
-        return await t.get(docRef);
-      });
-      const updatedDocData = await updatedDoc.data();
-
-      return await transformAndValidate(this.classType, updatedDocData);
+      const docRef = this.collection.doc(id);
+      obj.updatedAt = firestore.FieldValue.serverTimestamp();
+      await docRef.update(obj);
+      const updateDoc = await docRef.get();
+      return await transformAndValidate(this.classType, updateDoc);
     } catch (err) {
       this.logger.error({err}, 'Error updating firestore doc');
       throw new Error('Error updating firestore doc');
+    }
+  }
+
+  public async upsert(obj: T, id?: string) {
+    try {
+      if (id) {
+        return this.update(id, obj);
+      }
+      return this.create(obj);
+    } catch (err) {
+      this.logger.error({err}, 'Error upserting firestore doc');
+      throw new Error('Error upserting firestore doc');
     }
   }
 

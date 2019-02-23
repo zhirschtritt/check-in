@@ -4,9 +4,7 @@ import {FirestoreServiceAccountProvider} from './firestore-service-account.provi
 
 @Injectable()
 export class FirestoreDbClientFactory {
-  constructor(
-    @Inject(FirestoreServiceAccountProvider) serviceAcctProvider: FirestoreServiceAccountProvider,
-  ) {
+  constructor(@Inject() serviceAcctProvider: FirestoreServiceAccountProvider) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAcctProvider.serviceAccount),
     });
