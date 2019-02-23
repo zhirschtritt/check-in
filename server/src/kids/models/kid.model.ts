@@ -6,9 +6,9 @@ import {KidEvent} from '../events/kid-event.entity';
 import {EventFactory} from '../events/kid-event.factory';
 import {KidCheckedInEvent} from '../events/impl/kid-checked-in.event';
 import {KidCheckedOutEvent} from '../events/impl/kid-checked-out.event';
-import {EventType} from '../interfaces/kid-event.interface';
 import {KidLocationProjection} from '../projections/kid-location.projection';
 import {di_keys} from '../../common/di-keys';
+import {EventType} from '@core';
 
 export interface KidAggregateRoot extends AggregateRoot {
   checkIn(kidId: string, locationId: string): Promise<IEvent>;
@@ -17,8 +17,7 @@ export interface KidAggregateRoot extends AggregateRoot {
 }
 
 @Injectable()
-export class KidAggregateRootImpl extends AggregateRoot
-  implements KidAggregateRoot {
+export class KidAggregateRootImpl extends AggregateRoot implements KidAggregateRoot {
   constructor(
     @Inject(di_keys.EventFactory)
     private readonly kidEventFactory: EventFactory,
@@ -33,10 +32,7 @@ export class KidAggregateRootImpl extends AggregateRoot
 
   async checkIn(kidId: string, locationId: string): Promise<IEvent> {
     const checkInEvent = new KidCheckedInEvent({kidId, locationId});
-    const kidEvent = await this.saveEvent(
-      checkInEvent,
-      EventType.kidCheckedInEvent,
-    );
+    const kidEvent = await this.saveEvent(checkInEvent, EventType.kidCheckedInEvent);
 
     this.apply(checkInEvent);
 
@@ -51,10 +47,7 @@ export class KidAggregateRootImpl extends AggregateRoot
     }
 
     const checkOutEvent = new KidCheckedOutEvent({kidId});
-    const kidEvent = await this.saveEvent(
-      checkOutEvent,
-      EventType.kidCheckedOutEvent,
-    );
+    const kidEvent = await this.saveEvent(checkOutEvent, EventType.kidCheckedOutEvent);
 
     this.apply(checkOutEvent);
 

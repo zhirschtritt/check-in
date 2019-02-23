@@ -2,8 +2,7 @@
 const setGlobalVars = require('indexeddbshim');
 import Dexie from 'dexie';
 import {Injectable} from '@nestjs/common';
-import {KidLocation} from './kid-location.projection';
-import {KidHistoryDay} from './kid-history-day.projection';
+import {KidLocation, KidHistoryDay} from '@core';
 
 const shim = {};
 setGlobalVars(shim, {checkOrigin: false});
