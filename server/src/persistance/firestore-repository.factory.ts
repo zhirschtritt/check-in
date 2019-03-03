@@ -22,7 +22,7 @@ export interface FirestoreRepositoryConstructor<T> {
     collectionId: string,
     classType: ClassType<T>,
     firestoreClient: firestore.Firestore,
-    logFactory: LogFactory,
+    logger: AppLogger,
   );
 }
 
@@ -37,23 +37,26 @@ export class FirestoreRepositoryFactory {
   manufacture<T extends FirestoreDocument>(
     collectionId: string,
     classType: ClassType<T>,
-    repoImplementation: FirestoreRepositoryConstructor<T> = FirestoreRepository, // TODO: correct type for extends FirestoreRepository
+    repoImplementation: FirestoreRepositoryConstructor<T> = FirestoreRepository,
   ) {
-    return new repoImplementation(collectionId, classType, this.firestoreClient, this.logFactory);
+    return new repoImplementation(
+      collectionId,
+      classType,
+      this.firestoreClient,
+      this.logFactory(repoImplementation.name),
+    );
   }
 }
 
 export class FirestoreRepository<T extends FirestoreDocument> implements Repository<T> {
   protected readonly collection: firestore.CollectionReference;
-  protected readonly logger: AppLogger;
 
   constructor(
     collectionId: string,
     protected readonly classType: ClassType<T>,
     firestoreClient: firestore.Firestore,
-    logFactory: LogFactory,
+    protected readonly logger: AppLogger,
   ) {
-    this.logger = logFactory('FirestoreRepository');
     this.collection = firestoreClient.collection(collectionId);
   }
 
