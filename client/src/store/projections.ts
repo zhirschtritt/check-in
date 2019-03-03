@@ -1,6 +1,6 @@
 import * as R from 'ramda';
 import {Module, VuexModule, MutationAction} from 'vuex-module-decorators';
-import {KidLocation} from '../../../core/dist';
+import {KidLocation} from '@core';
 
 export type KidsByLocation = {
   locationId: string;

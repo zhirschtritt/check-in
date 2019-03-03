@@ -8,10 +8,10 @@ import {CheckInCommand} from './commands/impl/check-in.command';
 import {LoadFromHistoryCommand} from './commands/impl/load-from-history.command';
 import {CheckOutCommand} from './commands/impl/check-out.command';
 import {AppLogger, LogFactory} from 'src/common/logger';
-import {KidLocationProjection} from './projections/kid-location.projection';
 import {KidHistoryDayProjection} from './projections/kid-history-day.projection';
 import {di_keys} from '../common/di-keys';
 import {KidLocation, KidHistoryDay} from '@core';
+import {FirestoreRepository} from '../persistance/firestore-repository.factory';
 
 @Injectable()
 export class KidsCqrsService {
@@ -19,7 +19,7 @@ export class KidsCqrsService {
   constructor(
     @Inject(di_keys.LogFactory) logFactory: LogFactory,
     @Inject(di_keys.KidLocationsProj)
-    private readonly kidLocationProj: KidLocationProjection,
+    private readonly kidLocationProj: FirestoreRepository<KidLocation>,
     @Inject(di_keys.KidHistoryDayProj)
     private readonly kidHistoryDayProj: KidHistoryDayProjection,
     @InjectRepository(KidEvent)

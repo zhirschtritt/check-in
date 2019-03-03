@@ -1,4 +1,4 @@
-import {EventType} from '../kid-event.interface';
+import {EventType} from '../interfaces/kid-event.interface';
 
 export interface KidHistoryDay {
   id?: number;

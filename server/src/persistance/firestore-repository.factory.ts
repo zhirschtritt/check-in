@@ -1,9 +1,10 @@
 import {ClassType, transformAndValidate} from 'class-transformer-validator';
-import {validateOrReject, ValidationError} from 'class-validator';
-import {Inject} from '@nestjs/common';
-import {FirestoreDbClientFactory} from './firestore-client-factory';
+import {Inject, Injectable} from '@nestjs/common';
 import {firestore} from 'firebase-admin';
 import {LogFactory, AppLogger} from '../common/logger';
+import {FirestoreTimestamp} from '../../../core/dist';
+import {di_keys} from '../common/di-keys';
+import {DocumentSnapshot} from '@google-cloud/firestore';
 
 export interface Repository<T> {
   create(obj: T): Promise<T>;
@@ -14,35 +15,62 @@ export interface Repository<T> {
   delete(id: string): Promise<void>;
 }
 
-export interface FirestoreTimestamp {
-  createdAt: firestore.FieldValue;
-  updatedAt: firestore.FieldValue;
-}
-
 export type FirestoreDocument = firestore.DocumentData & FirestoreTimestamp;
 
-export abstract class FirestoreRepository<T extends FirestoreDocument> implements Repository<T> {
-  private readonly collection: firestore.CollectionReference;
-  private readonly logger: AppLogger;
+export interface FirestoreRepositoryConstructor<T> {
+  new (
+    collectionId: string,
+    classType: ClassType<T>,
+    firestoreClient: firestore.Firestore,
+    logFactory: LogFactory,
+  );
+}
+
+@Injectable()
+export class FirestoreRepositoryFactory {
+  constructor(
+    @Inject(di_keys.LogFactory) private readonly logFactory: LogFactory,
+    @Inject(di_keys.FirestoreClient)
+    private readonly firestoreClient: firestore.Firestore,
+  ) {}
+
+  manufacture<T extends FirestoreDocument>(
+    collectionId: string,
+    classType: ClassType<T>,
+    repoImplementation: FirestoreRepositoryConstructor<T> = FirestoreRepository, // TODO: correct type for extends FirestoreRepository
+  ) {
+    return new repoImplementation(collectionId, classType, this.firestoreClient, this.logFactory);
+  }
+}
+
+export class FirestoreRepository<T extends FirestoreDocument> implements Repository<T> {
+  protected readonly collection: firestore.CollectionReference;
+  protected readonly logger: AppLogger;
 
   constructor(
     collectionId: string,
-    private readonly classType: ClassType<T>,
-    @Inject(FirestoreDbClientFactory)
-    private readonly firestoreClient: firestore.Firestore,
-    @Inject(LogFactory) logFactory: LogFactory,
+    protected readonly classType: ClassType<T>,
+    firestoreClient: firestore.Firestore,
+    logFactory: LogFactory,
   ) {
     this.logger = logFactory('FirestoreRepository');
     this.collection = firestoreClient.collection(collectionId);
   }
 
+  protected async adaptFirestoreData(firestoreObj: DocumentSnapshot) {
+    const resObj = firestoreObj.data();
+    resObj.updatedAt = firestoreObj.updateTime.toDate();
+    resObj.createdAt = firestoreObj.createTime.toDate();
+    resObj.id = firestoreObj.id;
+
+    return await transformAndValidate(this.classType, resObj);
+  }
+
   public async create(obj: T): Promise<T> {
     try {
-      await validateOrReject(obj);
-      obj.createdAt = firestore.FieldValue.serverTimestamp();
-      obj.updatedAt = firestore.FieldValue.serverTimestamp();
       const docRef = await this.collection.add(obj);
-      return await transformAndValidate(this.classType, await docRef.get());
+      const storedObj = await docRef.get();
+      return await this.adaptFirestoreData(storedObj);
     } catch (err) {
       this.logger.error({err}, 'Error creating new firestore doc');
       throw new Error('Error creating new firestore doc');
@@ -52,7 +80,7 @@ export abstract class FirestoreRepository<T extends FirestoreDocument> implement
   public async findOne(id: string): Promise<T | null> {
     try {
       const doc = await this.collection.doc(id).get();
-      return doc !== null ? await transformAndValidate(this.classType, doc) : null;
+      return doc !== null ? await this.adaptFirestoreData(doc) : null;
     } catch (err) {
       this.logger.error({err}, 'Error finding firestore doc');
       throw new Error('Error finding firestore doc');
@@ -61,11 +89,10 @@ export abstract class FirestoreRepository<T extends FirestoreDocument> implement
 
   public async findAll(): Promise<T[]> {
     try {
-      const allDocRefs = (await this.collection.get()).docs;
+      const allDocs = (await this.collection.get()).docs;
       return await Promise.all(
-        allDocRefs.map(async docRef => {
-          const doc = await docRef.data();
-          return await transformAndValidate(this.classType, doc);
+        allDocs.map(async doc => {
+          return await this.adaptFirestoreData(doc);
         }),
       );
     } catch (err) {
@@ -77,10 +104,9 @@ export abstract class FirestoreRepository<T extends FirestoreDocument> implement
   public async update(id: string, obj: Partial<T>): Promise<T> {
     try {
       const docRef = this.collection.doc(id);
-      obj.updatedAt = firestore.FieldValue.serverTimestamp();
       await docRef.update(obj);
-      const updateDoc = await docRef.get();
-      return await transformAndValidate(this.classType, updateDoc);
+      const doc = await docRef.get();
+      return await this.adaptFirestoreData(doc);
     } catch (err) {
       this.logger.error({err}, 'Error updating firestore doc');
       throw new Error('Error updating firestore doc');

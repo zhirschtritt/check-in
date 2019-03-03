@@ -6,9 +6,9 @@ import {KidEvent} from '../events/kid-event.entity';
 import {EventFactory} from '../events/kid-event.factory';
 import {KidCheckedInEvent} from '../events/impl/kid-checked-in.event';
 import {KidCheckedOutEvent} from '../events/impl/kid-checked-out.event';
-import {KidLocationProjection} from '../projections/kid-location.projection';
 import {di_keys} from '../../common/di-keys';
-import {EventType} from '@core';
+import {EventType, KidLocation} from '@core';
+import {FirestoreRepository} from '../../persistance/firestore-repository.factory';
 
 export interface KidAggregateRoot extends AggregateRoot {
   checkIn(kidId: string, locationId: string): Promise<IEvent>;
@@ -22,7 +22,7 @@ export class KidAggregateRootImpl extends AggregateRoot implements KidAggregateR
     @Inject(di_keys.EventFactory)
     private readonly kidEventFactory: EventFactory,
     @Inject(di_keys.KidLocationsProj)
-    private readonly kidLocationsProj: KidLocationProjection,
+    private readonly kidLocationsProj: FirestoreRepository<KidLocation>,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
   ) {

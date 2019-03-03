@@ -12,14 +12,23 @@ import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRootImpl} from './models/kid.model';
 import {InMemoryDb, DexieInMemoryDb} from './projections/in-memory-db';
 import {KidsCqrsService} from './kids-cqrs.service';
-import {KidLocationProjectionImpl} from './projections/kid-location.projection';
 import {KidHistoryDayProjectionImpl} from './projections/kid-history-day.projection';
 import {di_keys} from '../common/di-keys';
+import {FirestoreRepositoryFactory} from '../persistance/firestore-repository.factory';
+import {PersistanceModule} from '../persistance/persistance.module';
+import {KidLocation, KidLocationProjectionRepository} from './projections/kid-location';
 
 export const ProjectionProviders = [
   {
     provide: di_keys.KidLocationsProj,
-    useClass: KidLocationProjectionImpl,
+    useFactory: (firestoreRepoFactory: FirestoreRepositoryFactory) => {
+      return firestoreRepoFactory.manufacture(
+        'kid-location-projection',
+        KidLocation,
+        KidLocationProjectionRepository,
+      );
+    },
+    inject: [FirestoreRepositoryFactory],
   },
   {
     provide: di_keys.KidHistoryDayProj,
@@ -32,6 +41,7 @@ export const ProjectionProviders = [
     CQRSModule,
     TypeOrmModule.forFeature([Kid]),
     TypeOrmModule.forFeature([KidEvent]),
+    PersistanceModule,
   ],
   controllers: [KidsController],
   providers: [
@@ -43,6 +53,7 @@ export const ProjectionProviders = [
     ...EventHandlers,
     ...CommandHandlers,
     ...ProjectionProviders,
+    FirestoreRepositoryFactory,
   ],
 })
 export class KidsModule implements OnModuleInit {
@@ -65,6 +76,6 @@ export class KidsModule implements OnModuleInit {
     await this.inMemoryDb.delete();
     await this.inMemoryDb.open();
 
-    await this.kidsCqrsService.loadEventsFromDay();
+    // await this.kidsCqrsService.loadEventsFromDay();
   }
 }
