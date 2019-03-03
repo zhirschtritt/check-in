@@ -5,7 +5,7 @@ import {KidLocation} from '@core';
 import {di_keys} from '../../../common/di-keys';
 import {KidCheckedOutEvent} from '../impl/kid-checked-out.event';
 import {FirestoreRepository} from '../../../persistance/firestore-repository.factory';
-import {KidLocationProjectionRepository} from '../../projections/kid-location';
+import {KidLocationProjectionRepository} from '../../projections/kid-location-repository';
 
 @EventsHandler(KidCheckedInEvent, KidCheckedOutEvent)
 export class KidLocationProjectionEventHandler

@@ -1,2 +1,2 @@
-export * from './kid-history.interface';
+export * from './kid-history';
 export * from './kid-location';

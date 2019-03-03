@@ -12,27 +12,22 @@ import {KidEventFactory} from './events/kid-event.factory';
 import {KidAggregateRootImpl} from './models/kid.model';
 import {InMemoryDb, DexieInMemoryDb} from './projections/in-memory-db';
 import {KidsCqrsService} from './kids-cqrs.service';
-import {KidHistoryDayProjectionImpl} from './projections/kid-history-day.projection';
 import {di_keys} from '../common/di-keys';
 import {FirestoreRepositoryFactory} from '../persistance/firestore-repository.factory';
 import {PersistanceModule} from '../persistance/persistance.module';
-import {KidLocation, KidLocationProjectionRepository} from './projections/kid-location';
+import {kidLocationProjectionRepositoryFactory} from './projections/kid-location-repository';
+import {kidHistoryDayProjectionRepositoryFactory} from './projections';
 
 export const ProjectionProviders = [
   {
     provide: di_keys.KidLocationsProj,
-    useFactory: (firestoreRepoFactory: FirestoreRepositoryFactory) => {
-      return firestoreRepoFactory.manufacture(
-        'kid-location-projection',
-        KidLocation,
-        KidLocationProjectionRepository,
-      );
-    },
+    useFactory: kidLocationProjectionRepositoryFactory,
     inject: [FirestoreRepositoryFactory],
   },
   {
     provide: di_keys.KidHistoryDayProj,
-    useClass: KidHistoryDayProjectionImpl,
+    useFactory: kidHistoryDayProjectionRepositoryFactory,
+    inject: [FirestoreRepositoryFactory],
   },
 ];
 

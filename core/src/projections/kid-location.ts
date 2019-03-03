@@ -1,9 +1,10 @@
-import {FirestoreTimestamp} from '../interfaces/firestore-timestamps';
+import {Model} from '../interfaces';
 
 export interface RawKidLocation {
-  id?: number;
   kidId: string;
   locationId: string;
 }
 
-export interface KidLocation extends RawKidLocation, FirestoreTimestamp {}
+export interface KidLocation extends RawKidLocation, Model {}
+
+export class KidLocation implements KidLocation {}

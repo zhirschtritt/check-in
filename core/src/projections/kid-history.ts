@@ -1,7 +1,7 @@
 import {EventType} from '../interfaces/kid-event.interface';
+import {Model} from '../interfaces/model';
 
-export interface KidHistoryDay {
-  id?: number;
+export interface RawKidHistoryDay {
   kidId: string;
   history: KidHistoryEvent[];
 }
@@ -11,3 +11,7 @@ export interface KidHistoryEvent {
   timestamp?: Date;
   locationId?: string;
 }
+
+export interface KidHistoryDay extends RawKidHistoryDay, Model {}
+
+export class KidHistoryDay implements KidHistoryDay {}

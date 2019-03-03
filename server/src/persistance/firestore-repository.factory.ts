@@ -2,9 +2,9 @@ import {ClassType, transformAndValidate} from 'class-transformer-validator';
 import {Inject, Injectable} from '@nestjs/common';
 import {firestore} from 'firebase-admin';
 import {LogFactory, AppLogger} from '../common/logger';
-import {FirestoreTimestamp} from '../../../core/dist';
 import {di_keys} from '../common/di-keys';
 import {DocumentSnapshot} from '@google-cloud/firestore';
+import {Timestamped} from '@core';
 
 export interface Repository<T> {
   create(obj: T): Promise<T>;
@@ -15,7 +15,7 @@ export interface Repository<T> {
   delete(id: string): Promise<void>;
 }
 
-export type FirestoreDocument = firestore.DocumentData & FirestoreTimestamp;
+export type FirestoreDocument = firestore.DocumentData & Timestamped;
 
 export interface FirestoreRepositoryConstructor<T> {
   new (
