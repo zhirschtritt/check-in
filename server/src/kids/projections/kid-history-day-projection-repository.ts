@@ -3,7 +3,7 @@ import {
   FirestoreRepository,
   FirestoreRepositoryFactory,
 } from '../../persistance/firestore-repository.factory';
-import {exists} from 'fs';
+import {firestore} from 'firebase-admin';
 
 export const kidHistoryDayProjectionRepositoryFactory = (
   firestoreRepoFactory: FirestoreRepositoryFactory,
@@ -23,18 +23,16 @@ export class KidHistoryDayProjectionRepository extends FirestoreRepository<KidHi
   implements KidHistoryDayProjectionRepository {
   async appendEventByKidId(kidId: string, event: KidHistoryEvent) {
     const exsistingKidHistory = await this.findByKidId(kidId);
-
-    event.timestamp = event.timestamp || new Date();
+    event.timestamp = Date.now();
 
     if (exsistingKidHistory) {
-      exsistingKidHistory.history.push(event);
       return await this.update(exsistingKidHistory.id, {
-        history: exsistingKidHistory.history,
+        history: firestore.FieldValue.arrayUnion(event) as any,
       });
     } else {
       return await this.create({
         kidId,
-        history: [event],
+        history: firestore.FieldValue.arrayUnion(event) as any,
       });
     }
   }

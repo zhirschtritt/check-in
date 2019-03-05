@@ -1,11 +1,10 @@
-import {Inject} from '@nestjs/common';
-import {IEventHandler, EventsHandler} from '@nestjs/cqrs';
-import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
-import {KidLocation} from '@core';
 import {di_keys} from '../../../common/di-keys';
+import {IEventHandler, EventsHandler} from '@nestjs/cqrs';
+import {Inject} from '@nestjs/common';
+import {KidCheckedInEvent} from '../impl/kid-checked-in.event';
 import {KidCheckedOutEvent} from '../impl/kid-checked-out.event';
-import {FirestoreRepository} from '../../../persistance/firestore-repository.factory';
-import {KidLocationProjectionRepository} from '../../projections/kid-location-repository';
+import {KidLocation} from '@core';
+import {KidLocationProjectionRepository} from '../../projections/kid-location-projection-repository';
 
 @EventsHandler(KidCheckedInEvent, KidCheckedOutEvent)
 export class KidLocationProjectionEventHandler

@@ -1,7 +1,7 @@
 <template>
   <v-container fluid grid-list-md>
     <v-data-iterator
-      :items="kidsByLoc"
+      :items="kidsByLocation"
       content-tag="v-layout"
       item-key="locationId"
       hide-actions
@@ -30,15 +30,14 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import {Component, Vue, Watch} from 'vue-property-decorator';
 import {namespace, Getter} from 'vuex-class';
-import {KidLocation} from '../../../core/dist';
-import {KidsByLocation} from '../store/projections';
+import {KidsByLocation} from '../../../core/dist';
 
-const projections = namespace('projections');
+const kidsByLocation = namespace('kidsByLocation');
 
 @Component
 export default class KidsByLocationTables extends Vue {
-  @projections.Getter('kidsByLocation') kidsByLoc: KidsByLocation;
+  @kidsByLocation.Getter('kidsByLocation') kidsByLocation: KidsByLocation[];
 }
 </script>

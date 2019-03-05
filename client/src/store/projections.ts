@@ -1,36 +1,16 @@
-import * as R from 'ramda';
-import {Module, VuexModule, MutationAction} from 'vuex-module-decorators';
-import {KidLocation} from '@core';
+import {IConfig} from 'vuex-easy-firestore/types/module/defaultConfig';
+import {KidsByLocation} from '@core';
 
-export type KidsByLocation = {
-  locationId: string;
-  kids: string[];
-}[];
-
-@Module({namespaced: true, name: 'projections'})
-export class ProjectionsModule extends VuexModule {
-  kidLocations: KidLocation[] = [
-    {locationId: 'some location', kidId: 'bart'},
-    {locationId: 'some location', kidId: 'lisa'},
-    {locationId: 'some location', kidId: 'homer'},
-    {locationId: 'other location', kidId: 'doug'},
-    {locationId: 'other location', kidId: 'sarah'},
-    {locationId: 'other location', kidId: 'katie'},
-  ];
-
-  get kidsByLocation(): KidsByLocation {
-    const grouped = R.groupBy((k: KidLocation) => k.locationId)(this.kidLocations);
-    return Object.keys(grouped).map(locId => {
-      return {
-        locationId: locId,
-        kids: grouped[locId].map(l => l.kidId),
-      };
-    });
-  }
-
-  // @MutationAction({mutate: ['kidLocations']})
-  // async fetchKidLocations() {
-  //   const {data: kidLocations} = await http.get('/kids/location');
-  //   return kidLocations;
-  // }
-}
+export const kidLocationProjectionModule: IConfig = {
+  firestorePath: 'kids-by-location-projection',
+  firestoreRefType: 'collection', // or 'doc'
+  moduleName: 'kidsByLocation',
+  statePropName: 'data',
+  getters: {
+    kidsByLocation: (state: any): KidsByLocation[] => {
+      return Object.entries(state.data as KidsByLocation).map(v => {
+        return {...v[1], id: v[0]};
+      });
+    },
+  },
+};

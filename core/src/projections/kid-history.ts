@@ -8,7 +8,7 @@ export interface RawKidHistoryDay {
 
 export interface KidHistoryEvent {
   eventType: EventType;
-  timestamp?: Date;
+  timestamp?: number;
   locationId?: string;
 }
 

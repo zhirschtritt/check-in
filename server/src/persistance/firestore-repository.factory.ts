@@ -3,7 +3,7 @@ import {Inject, Injectable} from '@nestjs/common';
 import {firestore} from 'firebase-admin';
 import {LogFactory, AppLogger} from '../common/logger';
 import {di_keys} from '../common/di-keys';
-import {DocumentSnapshot} from '@google-cloud/firestore';
+import {DocumentSnapshot, DocumentData} from '@google-cloud/firestore';
 import {Timestamped} from '@core';
 
 export interface Repository<T> {
@@ -54,20 +54,34 @@ export class FirestoreRepository<T extends FirestoreDocument> implements Reposit
   constructor(
     collectionId: string,
     protected readonly classType: ClassType<T>,
-    firestoreClient: firestore.Firestore,
+    protected readonly firestoreClient: firestore.Firestore,
     protected readonly logger: AppLogger,
   ) {
     this.collection = firestoreClient.collection(collectionId);
   }
 
   protected async adaptFirestoreData(firestoreObj: DocumentSnapshot) {
-    const resObj = firestoreObj.data();
-    resObj.updatedAt = firestoreObj.updateTime.toDate();
-    resObj.createdAt = firestoreObj.createTime.toDate();
-    resObj.id = firestoreObj.id;
+    const rawData = this.parseTimestamp(firestoreObj.data());
 
-    return await transformAndValidate(this.classType, resObj);
+    rawData.updatedAt = rawData.updatedAt || firestoreObj.updateTime.toDate();
+    rawData.createdAt = rawData.createdAt || firestoreObj.createTime.toDate();
+    rawData.id = rawData.id || firestoreObj.id;
+
+    return await transformAndValidate(this.classType, rawData);
   }
+
+  private parseTimestamp = (obj: DocumentData): DocumentData => {
+    Object.keys(obj).forEach(key => {
+      if (!obj[key]) return;
+      if (typeof obj[key] === 'object' && 'toDate' in obj[key]) {
+        obj[key] = obj[key].toDate();
+      } else if (typeof obj[key] === 'object') {
+        this.parseTimestamp(obj[key]);
+      }
+    });
+
+    return obj;
+  };
 
   public async create(obj: T): Promise<T> {
     try {

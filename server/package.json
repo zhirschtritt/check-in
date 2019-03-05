@@ -31,6 +31,7 @@
     "envalid": "^4.1.4",
     "firebase-admin": "^7.0.0",
     "indexeddbshim": "^4.1.0",
+    "lodash": "^4.17.11",
     "pg": "^7.7.1",
     "pino": "^5.10.6",
     "pino-pretty": "^2.5.0",
