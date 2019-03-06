@@ -8,9 +8,7 @@ export const kidLocationProjectionModule: IConfig = {
   statePropName: 'data',
   getters: {
     kidsByLocation: (state: any): KidsByLocation[] => {
-      return Object.entries(state.data as KidsByLocation).map(v => {
-        return {...v[1], id: v[0]};
-      });
+      return Object.values(state.data);
     },
   },
 };

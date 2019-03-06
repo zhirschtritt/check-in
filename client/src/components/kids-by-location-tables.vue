@@ -3,7 +3,7 @@
     <v-data-iterator
       :items="kidsByLocation"
       content-tag="v-layout"
-      item-key="locationId"
+      item-key="id"
       hide-actions
       row
       wrap
@@ -32,7 +32,7 @@
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator';
 import {namespace, Getter} from 'vuex-class';
-import {KidsByLocation} from '../../../core/dist';
+import {KidsByLocation} from '../../../core/src';
 
 const kidsByLocation = namespace('kidsByLocation');
 

@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {http} from '../http';
 import {kidLocationProjectionModule} from './projections';
 import createFirestoreModules from 'vuex-easy-firestore';
 import * as firebase from 'firebase/app';
@@ -18,18 +17,6 @@ const firestoreModules = createFirestoreModules([kidLocationProjectionModule], {
 
 const store = new Vuex.Store({
   plugins: [firestoreModules],
-  state: {
-    connected: false, // websocket connection state
-    http,
-  },
-  mutations: {
-    SOCKET_CONNECT(state) {
-      state.connected = true; // eslint-disable-line no-param-reassign
-    },
-    SOCKET_DISCONNECT(state) {
-      state.connected = false; // eslint-disable-line no-param-reassign
-    },
-  },
 });
 
 store.dispatch('kidsByLocation/openDBChannel');

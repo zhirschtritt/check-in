@@ -15,13 +15,13 @@ export class KidLocationProjectionEventHandler
   ) {}
 
   async handle(event: KidCheckedInEvent | KidCheckedOutEvent) {
+    const existingLocRecord = await this.kidLocationsProjRepo.findByKidId(event.kidId);
+
     if (event instanceof KidCheckedInEvent) {
       const newKidLocation: KidLocation = {
         kidId: event.kidId,
         locationId: event.locationId,
       };
-
-      const existingLocRecord = await this.kidLocationsProjRepo.findByKidId(event.kidId);
 
       if (existingLocRecord) {
         return await this.kidLocationsProjRepo.update(existingLocRecord.id, newKidLocation);
@@ -30,8 +30,8 @@ export class KidLocationProjectionEventHandler
       return await this.kidLocationsProjRepo.create(newKidLocation);
     }
 
-    if (event instanceof KidCheckedOutEvent) {
-      return await this.kidLocationsProjRepo.delete(event.kidId);
+    if (event instanceof KidCheckedOutEvent && existingLocRecord) {
+      return await this.kidLocationsProjRepo.delete(existingLocRecord.id);
     }
 
     throw new Error('Cannot handle unknown event type');
