@@ -19,8 +19,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^5.7.2",
-    "@nestjs/core": "^5.7.2",
+    "@nestjs/common": "^5.7.4",
+    "@nestjs/core": "^5.7.4",
     "@nestjs/cqrs": "^5.1.1",
     "@nestjs/swagger": "^2.5.1",
     "@nestjs/typeorm": "^5.2.2",
@@ -31,6 +31,7 @@
     "envalid": "^4.1.4",
     "firebase-admin": "^7.0.0",
     "indexeddbshim": "^4.1.0",
+    "lodash": "^4.17.11",
     "pg": "^7.7.1",
     "pino": "^5.10.6",
     "pino-pretty": "^2.5.0",

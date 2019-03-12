@@ -1,14 +1,14 @@
 import {AggregateRoot, IEvent} from '@nestjs/cqrs';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Injectable, Inject} from '@nestjs/common';
+import {Injectable, Inject, BadRequestException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {KidEvent} from '../events/kid-event.entity';
 import {EventFactory} from '../events/kid-event.factory';
 import {KidCheckedInEvent} from '../events/impl/kid-checked-in.event';
 import {KidCheckedOutEvent} from '../events/impl/kid-checked-out.event';
-import {EventType} from '../interfaces/kid-event.interface';
-import {KidLocationProjection} from '../projections/kid-location.projection';
 import {di_keys} from '../../common/di-keys';
+import {EventType} from '@core';
+import {KidLocationProjectionRepository} from '../projections/kid-location-projection-repository';
 
 export interface KidAggregateRoot extends AggregateRoot {
   checkIn(kidId: string, locationId: string): Promise<IEvent>;
@@ -17,13 +17,12 @@ export interface KidAggregateRoot extends AggregateRoot {
 }
 
 @Injectable()
-export class KidAggregateRootImpl extends AggregateRoot
-  implements KidAggregateRoot {
+export class KidAggregateRootImpl extends AggregateRoot implements KidAggregateRoot {
   constructor(
     @Inject(di_keys.EventFactory)
     private readonly kidEventFactory: EventFactory,
     @Inject(di_keys.KidLocationsProj)
-    private readonly kidLocationsProj: KidLocationProjection,
+    private readonly kidLocationsProj: KidLocationProjectionRepository,
     @InjectRepository(KidEvent)
     private readonly eventRepository: Repository<KidEvent>,
   ) {
@@ -33,10 +32,7 @@ export class KidAggregateRootImpl extends AggregateRoot
 
   async checkIn(kidId: string, locationId: string): Promise<IEvent> {
     const checkInEvent = new KidCheckedInEvent({kidId, locationId});
-    const kidEvent = await this.saveEvent(
-      checkInEvent,
-      EventType.kidCheckedInEvent,
-    );
+    const kidEvent = await this.persistEvent(checkInEvent, EventType.kidCheckedInEvent);
 
     this.apply(checkInEvent);
 
@@ -44,17 +40,14 @@ export class KidAggregateRootImpl extends AggregateRoot
   }
 
   async checkOut(kidId: string): Promise<IEvent> {
-    const kidLocation = await this.kidLocationsProj.findOne(kidId);
+    const kidLocation = await this.kidLocationsProj.findByKidId(kidId);
 
     if (!kidLocation) {
-      throw new Error('Kid not currently checked in, cannot check out');
+      throw new BadRequestException('Kid not currently checked in, cannot check out');
     }
 
     const checkOutEvent = new KidCheckedOutEvent({kidId});
-    const kidEvent = await this.saveEvent(
-      checkOutEvent,
-      EventType.kidCheckedOutEvent,
-    );
+    const kidEvent = await this.persistEvent(checkOutEvent, EventType.kidCheckedOutEvent);
 
     this.apply(checkOutEvent);
 
@@ -67,7 +60,7 @@ export class KidAggregateRootImpl extends AggregateRoot
       .forEach(kidEvent => this.apply(kidEvent));
   }
 
-  async saveEvent(event: IEvent, eventType: EventType) {
+  async persistEvent(event: IEvent, eventType: EventType) {
     const newKidEvent = new KidEvent();
 
     newKidEvent.type = eventType;

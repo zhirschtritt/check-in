@@ -1,26 +1,24 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {http} from '../http';
-import {ProjectionsModule} from './projections';
+import {kidLocationProjectionModule} from './projections';
+import createFirestoreModules from 'vuex-easy-firestore';
+import * as firebase from 'firebase/app';
+import 'firebase/firestore';
 
 Vue.use(Vuex);
 
-const store = new Vuex.Store({
-  state: {
-    connected: false, // websocket connection state
-    http,
-  },
-  mutations: {
-    SOCKET_CONNECT(state) {
-      state.connected = true; // eslint-disable-line no-param-reassign
-    },
-    SOCKET_DISCONNECT(state) {
-      state.connected = false; // eslint-disable-line no-param-reassign
-    },
-  },
-  modules: {
-    projections: ProjectionsModule,
-  },
+firebase.initializeApp({
+  projectId: 'pnc-check-in-dev',
+  databaseUrl: 'https://pnc-check-in-dev.firebaseio.com',
+  apiKey: 'AIzaSyAoj4x7_663aSisQK1lUYe4nYLzqXvu1tY',
 });
+
+const firestoreModules = createFirestoreModules([kidLocationProjectionModule], {logging: true});
+
+const store = new Vuex.Store({
+  plugins: [firestoreModules],
+});
+
+store.dispatch('kidsByLocation/openDBChannel');
 
 export default store;

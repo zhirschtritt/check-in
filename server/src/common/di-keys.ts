@@ -5,4 +5,7 @@ export enum di_keys {
   LogFactory = 'LogFactory',
   KidLocationsProj = 'KidLocationsProjection',
   KidHistoryDayProj = 'KidHistoryDayProjection',
+  KidsByLocationProj = 'KidsByLocationProjection',
+  FirestoreClient = 'FirestoreClient',
+  GoogleServiceAcctProvider = 'GoogleServiceAcctProvider',
 }

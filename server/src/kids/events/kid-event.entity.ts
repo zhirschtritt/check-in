@@ -1,10 +1,5 @@
-import {
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-} from 'typeorm';
-import {EventType} from '../interfaces/kid-event.interface';
+import {Column, Entity, PrimaryGeneratedColumn, CreateDateColumn} from 'typeorm';
+import {EventType} from '@core';
 
 @Entity()
 export class KidEvent {

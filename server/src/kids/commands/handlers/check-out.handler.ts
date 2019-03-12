@@ -2,7 +2,7 @@ import {EventPublisher, ICommandHandler, CommandHandler} from '@nestjs/cqrs';
 import {KidAggregateRoot} from '../../models/kid.model';
 import {CheckOutCommand} from '../impl/check-out.command';
 import {LogFactory, AppLogger} from 'src/common/logger';
-import {Inject} from '@nestjs/common';
+import {Inject, HttpException} from '@nestjs/common';
 import {di_keys} from '../../../common/di-keys';
 
 @CommandHandler(CheckOutCommand)
@@ -26,9 +26,9 @@ export class CheckOutHandler implements ICommandHandler<CheckOutCommand> {
     try {
       const event = await kid.checkOut(kidId);
       resolve({event});
-    } catch (err) {
-      this.logger.error({error: err.message}, 'Error creating event');
-      resolve({error: err.message});
+    } catch (error) {
+      this.logger.error({error}, 'Error creating event');
+      resolve(Promise.reject(error));
     }
   }
 }

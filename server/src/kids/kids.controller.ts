@@ -21,14 +21,19 @@ export class KidsController {
     return this.kidsCqrsService.checkOut(id);
   }
 
-  @Get('location')
+  @Get('currentLocation')
   currentKidLocations(): Promise<KidLocation[]> {
     return this.kidsCqrsService.kidLocationsFindAll();
   }
 
-  @Get('history.day')
-  kidDailyHistories(): Promise<KidHistoryDay[]> {
+  @Get('locationHistory')
+  allKidDailyHistories(): Promise<KidHistoryDay[]> {
     return this.kidsCqrsService.kidDailyHistoriesFindAll();
+  }
+
+  @Get('locationHistory/:id')
+  kidDailyHistories(@Param('id') id: string): Promise<KidHistoryDay> {
+    return this.kidsCqrsService.kidDailyHistoriesFindOne(id);
   }
 
   @Get()

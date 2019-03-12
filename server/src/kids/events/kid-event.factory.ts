@@ -1,8 +1,8 @@
 import {IEvent} from '@nestjs/cqrs';
-import {EventType} from '../interfaces/kid-event.interface';
 import {KidCheckedInEvent} from './impl/kid-checked-in.event';
 import {Injectable} from '@nestjs/common';
 import {KidCheckedOutEvent} from './impl/kid-checked-out.event';
+import {EventType} from '@core';
 
 export interface EventFactory {
   manufacture(eventType: EventType, data: any): IEvent;
