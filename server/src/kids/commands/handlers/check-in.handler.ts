@@ -26,9 +26,9 @@ export class CheckInHandler implements ICommandHandler<CheckInCommand> {
     try {
       const event = await kid.checkIn(kidId, locationId);
       resolve({event});
-    } catch (err) {
-      this.logger.error({error: err.message}, 'Error creating event');
-      resolve({error: err.message});
+    } catch (error) {
+      this.logger.error({error}, 'Error creating event');
+      resolve(Promise.reject(error));
     }
   }
 }

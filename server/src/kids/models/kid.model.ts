@@ -1,6 +1,6 @@
 import {AggregateRoot, IEvent} from '@nestjs/cqrs';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Injectable, Inject} from '@nestjs/common';
+import {Injectable, Inject, BadRequestException} from '@nestjs/common';
 import {Repository} from 'typeorm';
 import {KidEvent} from '../events/kid-event.entity';
 import {EventFactory} from '../events/kid-event.factory';
@@ -43,7 +43,7 @@ export class KidAggregateRootImpl extends AggregateRoot implements KidAggregateR
     const kidLocation = await this.kidLocationsProj.findByKidId(kidId);
 
     if (!kidLocation) {
-      throw new Error('Kid not currently checked in, cannot check out');
+      throw new BadRequestException('Kid not currently checked in, cannot check out');
     }
 
     const checkOutEvent = new KidCheckedOutEvent({kidId});
